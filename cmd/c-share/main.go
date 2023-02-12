@@ -17,7 +17,5 @@ func main() {
 	}
 
 	database.Conn = conn
-	config.Dev = cfg.Mode == "development"
-
 	router.Serve(cfg.Port)
 }

@@ -11,7 +11,7 @@ import (
 type SimpleResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
-	Writer  http.ResponseWriter
+	Writer  http.ResponseWriter `json:"-"`
 }
 
 func (s *SimpleResponse) json() {
@@ -26,9 +26,30 @@ func (s *SimpleResponse) json() {
 	s.Writer.Write(js)
 }
 
+func (s *SimpleResponse) Success(msg string) {
+	s.Code = http.StatusOK
+
+	if config.Dev {
+		s.Message = msg
+	}
+
+	s.json()
+}
+
 func (s *SimpleResponse) BadRequest(msg string) {
 	s.Code = http.StatusBadRequest
 	s.Message = "Bad request!"
+
+	if config.Dev {
+		s.Message = msg
+	}
+
+	s.json()
+}
+
+func (s *SimpleResponse) Unauthorized(msg string) {
+	s.Code = http.StatusUnauthorized
+	s.Message = "Unauthorized!"
 
 	if config.Dev {
 		s.Message = msg

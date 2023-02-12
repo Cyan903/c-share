@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	golang.org/x/crypto v0.5.0
 	gopkg.in/yaml.v2 v2.4.0
 )

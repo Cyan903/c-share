@@ -18,6 +18,7 @@ type conf struct {
 }
 
 var Dev bool
+var Secret string
 
 func LoadConfig() conf {
 	config, err := ioutil.ReadFile("config.yaml")
@@ -32,6 +33,9 @@ func LoadConfig() conf {
 		log.Error.Println("Could not unmarshal config -", err)
 		os.Exit(1)
 	}
+
+	Dev = cfg.Mode == "development"
+	Secret = cfg.JWTSecret
 
 	return cfg
 }

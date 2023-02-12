@@ -12,7 +12,14 @@ func routes() http.Handler {
 	// TODO: Rate limit
 	mux := chi.NewRouter()
 
+	mux.Route("/@me", func(r chi.Router) {
+		r.Use(handlers.TokenCheck)
+
+		r.Get("/", handlers.WhoAmI)
+	})
+
 	mux.Post("/auth/register", handlers.Register)
+	mux.Post("/auth/login", handlers.Login)
 
 	return mux
 }
