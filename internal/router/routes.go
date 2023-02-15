@@ -16,6 +16,7 @@ func routes() http.Handler {
 		r.Use(handlers.TokenCheck)
 
 		r.Get("/", handlers.WhoAmI)
+		r.Post("/upload", handlers.Upload)
 	})
 
 	mux.Post("/auth/register", handlers.Register)

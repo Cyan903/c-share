@@ -6,11 +6,14 @@ create table users (
 	created_at datetime not null
 );
 
+-- 0 = public
+-- 1 = private
+-- 2 = unlisted
 create table files (
 	id int auto_increment primary key,
 	user int not null,
 	file_size int not null,
-	md5 char(32) not null,
+	file_type char(32) not null,
 	permissions int default 0 not null,
 	created_at datetime not null
 );

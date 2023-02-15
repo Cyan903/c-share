@@ -112,8 +112,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 		response.Unauthorized("Invalid password")
+		return
 	} else if errors.Is(err, sql.ErrNoRows) {
 		response.Unauthorized("Email does not exist")
+		return
 	} else if err != nil {
 		response.InternalError()
 		return

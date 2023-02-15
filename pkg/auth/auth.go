@@ -14,7 +14,7 @@ func Create(id string) (string, error) {
 		ExpiresAt: time.Now().Add(time.Hour * 4).Unix(),
 	})
 
-	token, err := claims.SignedString([]byte(config.Secret))
+	token, err := claims.SignedString([]byte(config.Data.JWTSecret))
 
 	if err != nil {
 		log.Error.Println("Could not create JWT token -", err)
@@ -26,7 +26,7 @@ func Create(id string) (string, error) {
 
 func VerifyToken(userToken string) (*jwt.Token, error) {
 	t, err := jwt.ParseWithClaims(userToken, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.Secret), nil
+		return []byte(config.Data.JWTSecret), nil
 	})
 
 	if err != nil {

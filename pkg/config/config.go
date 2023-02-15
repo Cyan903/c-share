@@ -9,20 +9,21 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type conf struct {
-	DSN  string `yaml:"DSN,omitempty"`
-	Port int    `yaml:"PORT,omitempty"`
-
+type Conf struct {
+	DSN       string `yaml:"DSN,omitempty"`
+	Port      int    `yaml:"PORT,omitempty"`
 	Mode      string `yaml:"MODE,omitempty"`
 	JWTSecret string `yaml:"SECRET,omitempty"`
+	UploadLimit int64 `yaml:"UPLOAD_LIMIT,omitempty"`
+	UploadPath string `yaml:"UPLOAD_PATH,omitempty"`
 }
 
+var Data Conf
 var Dev bool
-var Secret string
 
-func LoadConfig() conf {
+func LoadConfig() Conf {
 	config, err := ioutil.ReadFile("config.yaml")
-	cfg := conf{}
+	cfg := Conf{}
 
 	if err != nil {
 		log.Error.Println("Could not find config.yaml.")
@@ -34,8 +35,8 @@ func LoadConfig() conf {
 		os.Exit(1)
 	}
 
+	Data = cfg
 	Dev = cfg.Mode == "development"
-	Secret = cfg.JWTSecret
 
 	return cfg
 }
