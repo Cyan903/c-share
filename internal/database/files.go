@@ -10,6 +10,15 @@ import (
 	"github.com/Cyan903/c-share/pkg/log"
 )
 
+type File struct {
+	ID          string `json:"id"`
+	User        int    `json:"user"`
+	FileSize    int64  `json:"file_size"`
+	FileType    string `json:"file_type"`
+	Permissions int    `json:"permissions"`
+	CreatedAt   string `json:"created_at"`
+}
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -62,4 +71,26 @@ func UploadFile(rid, uid string, size int64, fileType string, permission int) er
 	}
 
 	return nil
+}
+
+func GetFile(id string) (File, error) {
+	var file File
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, permissions, created_at FROM files WHERE id = ?", id)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&file.ID,
+		&file.User,
+		&file.FileSize,
+		&file.FileType,
+		&file.Permissions,
+		&file.CreatedAt,
+	); err != nil {
+		log.Error.Println("Error getting file -", err)
+		return file, err
+	}
+
+	return file, nil
 }

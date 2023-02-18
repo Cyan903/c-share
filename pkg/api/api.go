@@ -14,7 +14,7 @@ type SimpleResponse struct {
 	Writer  http.ResponseWriter `json:"-"`
 }
 
-func (s *SimpleResponse) json() {
+func (s *SimpleResponse) JSON() {
 	js, err := json.Marshal(s)
 
 	if err != nil {
@@ -28,12 +28,8 @@ func (s *SimpleResponse) json() {
 
 func (s *SimpleResponse) Success(msg string) {
 	s.Code = http.StatusOK
-
-	if config.Dev {
-		s.Message = msg
-	}
-
-	s.json()
+	s.Message = msg
+	s.JSON()
 }
 
 func (s *SimpleResponse) BadRequest(msg string) {
@@ -44,7 +40,7 @@ func (s *SimpleResponse) BadRequest(msg string) {
 		s.Message = msg
 	}
 
-	s.json()
+	s.JSON()
 }
 
 func (s *SimpleResponse) Unauthorized(msg string) {
@@ -55,14 +51,25 @@ func (s *SimpleResponse) Unauthorized(msg string) {
 		s.Message = msg
 	}
 
-	s.json()
+	s.JSON()
 }
 
 func (s *SimpleResponse) InternalError() {
 	s.Code = http.StatusInternalServerError
 	s.Message = "Internal server error!"
 
-	s.json()
+	s.JSON()
+}
+
+func (s *SimpleResponse) NotFound(msg string) {
+	s.Code = http.StatusNotFound
+	s.Message = "Not found"
+
+	if msg != "" {
+		s.Message = msg
+	}
+
+	s.JSON()
 }
 
 // Message required!
@@ -70,5 +77,5 @@ func (s *SimpleResponse) Conflict(msg string) {
 	s.Code = http.StatusConflict
 	s.Message = msg
 
-	s.json()
+	s.JSON()
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
@@ -103,7 +104,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Upload file
-	tfile, err := ioutil.TempFile(config.Data.UploadPath, rid)
+	tfile, err := os.Create(config.Data.UploadPath + "/" + rid)
 
 	if err != nil {
 		response.InternalError()
@@ -129,5 +130,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success("Uploaded")
+	log.Info.Println(rid)
+	response.Success(rid)
 }
