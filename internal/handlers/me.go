@@ -94,8 +94,16 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create ID
+	rid, err := database.RandomID()
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
 	// Upload file
-	tfile, err := ioutil.TempFile(config.Data.UploadPath, fmt.Sprintf("%s-*", id.Issuer))
+	tfile, err := ioutil.TempFile(config.Data.UploadPath, rid)
 
 	if err != nil {
 		response.InternalError()
@@ -115,7 +123,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	tfile.Write(fbytes)
 
 	// Upload to database
-	if err := database.UploadFile(id.Issuer, handler.Size, handler.Header.Get("Content-Type"), priv); err != nil {
+	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), priv); err != nil {
 		response.InternalError()
 		log.Error.Println("Could not add file to database", err)
 		return

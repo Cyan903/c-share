@@ -10,7 +10,7 @@ create table users (
 -- 1 = private
 -- 2 = unlisted
 create table files (
-	id int auto_increment primary key,
+	id char(10) not null unique,
 	user int not null,
 	file_size int not null,
 	file_type char(32) not null,
