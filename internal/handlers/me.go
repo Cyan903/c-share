@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
@@ -130,6 +133,61 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Info.Println(rid)
 	response.Success(rid)
+}
+
+func DeleteUpload(w http.ResponseWriter, r *http.Request) {
+	var files []string
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	fileDecoder := json.NewDecoder(r.Body)
+	response := api.SimpleResponse{Writer: w}
+
+	if err := fileDecoder.Decode(&files); err != nil {
+		response.BadRequest(fmt.Sprintf("Could not decode json | %s", err.Error()))
+		return
+	}
+
+	if len(files) <= 0 {
+		response.BadRequest("No files?")
+		return
+	}
+
+	// Does user own files / Do they exist?
+	uid, err := strconv.Atoi(id.Issuer)
+
+	if err != nil {
+		response.InternalError()
+		log.Error.Println("Could not convert user ID", err)
+		return
+	}
+
+	o, err := database.OwnFiles(files, uid)
+
+	if err != nil {
+		response.InternalError()
+		log.Error.Println("Could not delete files", err)
+		return
+	}
+
+	if len(o) != 0 {
+		response.Conflict("Invalid IDs: " + strings.Join(o, ", "))
+		return
+	}
+
+	// Remove from database/disk
+	if err := database.DeleteFiles(id.Issuer, files); err != nil {
+		response.InternalError()
+		log.Error.Println("Could not remove file from DB", err)
+		return
+	}
+
+	for _, f := range files {
+		if err := os.Remove(config.Data.UploadPath + "/" + f); err != nil {
+			response.InternalError()
+			log.Error.Println("Could not remove file from disk", err)
+			return
+		}
+	}
+
+	response.Success("Files removed!")
 }

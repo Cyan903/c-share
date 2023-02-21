@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
+	"golang.org/x/exp/slices"
 )
 
 type File struct {
@@ -93,4 +95,104 @@ func GetFile(id string) (File, error) {
 	}
 
 	return file, nil
+}
+
+func OwnFiles(id []string, uid int) ([]string, error) {
+	var files []File
+	var dbIDs []string
+	var ids string
+	var notOwned []string
+
+	args := make([]interface{}, len(id))
+
+	for i, iid := range id {
+		args[i] = iid
+	}
+
+	if len(id) > 1 {
+		ids = strings.Repeat("?, ", len(id)-1) + "?"
+	} else {
+		ids = "?"
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	row, err := Conn.QueryContext(
+		c, fmt.Sprintf("SELECT id, user, file_size, file_type, permissions, created_at FROM files WHERE id IN (%s)", ids),
+		args...,
+	)
+
+	defer cancel()
+
+	if err != nil {
+		log.Error.Println("Error checking ownership -", err)
+		return notOwned, err
+	}
+
+	for row.Next() {
+		var file File
+
+		if err := row.Scan(
+			&file.ID,
+			&file.User,
+			&file.FileSize,
+			&file.FileType,
+			&file.Permissions,
+			&file.CreatedAt,
+		); err != nil {
+			log.Error.Println("Error scaning OwnFiles -", err)
+			return notOwned, err
+		}
+
+		files = append(files, file)
+		dbIDs = append(dbIDs, file.ID)
+	}
+
+	// Does file exist on DB?
+	for _, f := range id {
+		if !slices.Contains(dbIDs, f) {
+			log.Warning.Println(f, "file does not exist in database!")
+			notOwned = append(notOwned, f)
+		}
+	}
+
+	// Does user own files?
+	for _, f := range files {
+		if f.User != uid {
+			notOwned = append(notOwned, f.ID)
+		}
+	}
+
+	return notOwned, nil
+}
+
+func DeleteFiles(uid string, files []string) error {
+	var purgeList string
+
+	args := make([]interface{}, len(files)+1)
+	args[len(args)-1] = uid
+
+	for i, iid := range files {
+		args[i] = iid
+	}
+
+	if len(files) > 1 {
+		purgeList = strings.Repeat("?, ", len(files)-1) + "?"
+	} else {
+		purgeList = "?"
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err := Conn.ExecContext(
+		c, fmt.Sprintf("DELETE FROM files WHERE id IN (%s) AND user = ?", purgeList),
+		args...,
+	)
+
+	defer cancel()
+
+	if err != nil {
+		log.Error.Println("Error removing file -", err)
+		return err
+	}
+
+	return nil
 }

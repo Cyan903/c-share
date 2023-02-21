@@ -108,6 +108,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Attempt login
+	// TODO: don't use errors.Is
 	correct, err := database.Login(usr.Email, usr.Password)
 
 	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
