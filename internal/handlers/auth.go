@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/auth"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type account struct {
@@ -97,7 +95,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Check password
 	if api.ValidatePassword(usr.Password) {
-		response.BadRequest("Invalid password")
+		response.Unauthorized("Invalid password")
 		return
 	}
 
@@ -108,13 +106,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Attempt login
-	// TODO: don't use errors.Is
 	correct, err := database.Login(usr.Email, usr.Password)
 
-	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+	if errors.Is(err, database.BadPW) {
 		response.Unauthorized("Invalid password")
 		return
-	} else if errors.Is(err, sql.ErrNoRows) {
+	} else if errors.Is(err, database.NotFound) {
 		response.Unauthorized("Email does not exist")
 		return
 	} else if err != nil {

@@ -70,6 +70,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Accept request
 	upriv, priv := r.URL.Query().Get("perm"), 0
+	pass := r.URL.Query().Get("pass")
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	file, handler, err := r.FormFile("upload")
 
@@ -95,6 +96,17 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 	if handler.Size > config.Data.UploadLimit {
 		response.BadRequest("File too large!")
+		return
+	}
+
+	// Confirm password
+	if pass != "" && priv != 2 {
+		response.BadRequest("Password not required!")
+		return
+	}
+
+	if priv == 2 && api.ValidatePassword(pass) {
+		response.BadRequest("Invalid password!")
 		return
 	}
 
@@ -127,7 +139,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	tfile.Write(fbytes)
 
 	// Upload to database
-	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), priv); err != nil {
+	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), pass, priv); err != nil {
 		response.InternalError()
 		log.Error.Println("Could not add file to database", err)
 		return
@@ -154,6 +166,8 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 
 	// Does user own files / Do they exist?
 	uid, err := strconv.Atoi(id.Issuer)
+
+	// TODO: Check for dups
 
 	if err != nil {
 		response.InternalError()

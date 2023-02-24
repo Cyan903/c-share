@@ -14,6 +14,7 @@ create table files (
 	user int not null,
 	file_size int not null,
 	file_type char(32) not null,
+	file_pass char(60) default "",
 	permissions int default 0 not null,
 	created_at datetime not null
 );

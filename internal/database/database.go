@@ -2,12 +2,15 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/Cyan903/c-share/pkg/log"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var Conn *sql.DB
+var BadPW error = errors.New("Invalid password!")
+var NotFound error = errors.New("Not found!")
 
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
