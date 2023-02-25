@@ -26,12 +26,7 @@ func (s *SimpleResponse) JSON() {
 	s.Writer.Write(js)
 }
 
-func (s *SimpleResponse) Success(msg string) {
-	s.Code = http.StatusOK
-	s.Message = msg
-	s.JSON()
-}
-
+// Dev only message
 func (s *SimpleResponse) BadRequest(msg string) {
 	s.Code = http.StatusBadRequest
 	s.Message = "Bad request!"
@@ -54,6 +49,7 @@ func (s *SimpleResponse) Unauthorized(msg string) {
 	s.JSON()
 }
 
+// No message
 func (s *SimpleResponse) InternalError() {
 	s.Code = http.StatusInternalServerError
 	s.Message = "Internal server error!"
@@ -61,6 +57,7 @@ func (s *SimpleResponse) InternalError() {
 	s.JSON()
 }
 
+// Message required!
 func (s *SimpleResponse) NotFound(msg string) {
 	s.Code = http.StatusNotFound
 	s.Message = msg
@@ -70,6 +67,13 @@ func (s *SimpleResponse) NotFound(msg string) {
 
 func (s *SimpleResponse) Conflict(msg string) {
 	s.Code = http.StatusConflict
+	s.Message = msg
+
+	s.JSON()
+}
+
+func (s *SimpleResponse) Success(msg string) {
+	s.Code = http.StatusOK
 	s.Message = msg
 
 	s.JSON()

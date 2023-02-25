@@ -19,7 +19,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Error.Println("Could not ping database!", err)
+		log.Error.Println("Could not ping database -", err)
 		return nil, err
 	}
 

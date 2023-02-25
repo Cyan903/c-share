@@ -36,7 +36,7 @@ func IDUsed(id string) (bool, error) {
 	defer cancel()
 
 	if err := query.Scan(&inUse); err != nil && err != sql.ErrNoRows {
-		log.Error.Printf("Error in IDUsed | %s\n", err.Error())
+		log.Error.Println("Could not check ID -", err)
 		return true, err
 	}
 
@@ -52,7 +52,7 @@ func RandomID() (string, error) {
 		check, err := IDUsed(code)
 
 		if err != nil {
-			log.Error.Printf("Error in RandomID | %s\n", err.Error())
+			log.Error.Println("Error in RandomID -", err)
 			return "", err
 		}
 
@@ -104,7 +104,7 @@ func GetFile(id, pass string) (File, error) {
 			return file, NotFound
 		}
 
-		log.Error.Println("Error getting file -", err)
+		log.Error.Println("Error fetching file -", err)
 		return file, err
 	}
 
@@ -114,7 +114,7 @@ func GetFile(id, pass string) (File, error) {
 				return file, BadPW
 			}
 
-			log.Error.Println("Could not compare password |", err)
+			log.Error.Println("Could not compare passwords -", err)
 			return file, err
 		}
 	}

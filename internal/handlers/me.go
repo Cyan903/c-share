@@ -141,7 +141,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	// Upload to database
 	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), pass, priv); err != nil {
 		response.InternalError()
-		log.Error.Println("Could not add file to database", err)
+		log.Error.Println("Could not add file to database -", err)
 		return
 	}
 
@@ -171,7 +171,7 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.InternalError()
-		log.Error.Println("Could not convert user ID", err)
+		log.Error.Println("Could not convert user ID -", err)
 		return
 	}
 
@@ -179,7 +179,7 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.InternalError()
-		log.Error.Println("Could not delete files", err)
+		log.Error.Println("Could not delete files -", err)
 		return
 	}
 
@@ -191,14 +191,14 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	// Remove from database/disk
 	if err := database.DeleteFiles(id.Issuer, files); err != nil {
 		response.InternalError()
-		log.Error.Println("Could not remove file from DB", err)
+		log.Error.Println("Could not remove file from DB -", err)
 		return
 	}
 
 	for _, f := range files {
 		if err := os.Remove(config.Data.UploadPath + "/" + f); err != nil {
 			response.InternalError()
-			log.Error.Println("Could not remove file from disk", err)
+			log.Error.Println("Could not remove file from disk -", err)
 			return
 		}
 	}
