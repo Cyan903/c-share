@@ -73,7 +73,7 @@ func Login(email, password string) (Users, error) {
 
 	defer cancel()
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		log.Error.Println("User does not exist |", email)
 		return usr, NotFound
 	} else if err != nil {

@@ -24,14 +24,14 @@ func TokenCheck(next http.Handler) http.Handler {
 		response := api.SimpleResponse{Writer: w}
 
 		if len(token) == 0 {
-			response.Unauthorized("No token provided")
+			response.Unauthorized("No token provided!")
 			return
 		}
 
 		check, err := auth.VerifyToken(token)
 
 		if err != nil {
-			response.Unauthorized("Invalid token")
+			response.Unauthorized("Invalid token!")
 			return
 		}
 
@@ -155,7 +155,7 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 
 	if err := fileDecoder.Decode(&files); err != nil {
-		response.BadRequest(fmt.Sprintf("Could not decode json | %s", err.Error()))
+		response.BadRequest("Invalid JSON!")
 		return
 	}
 

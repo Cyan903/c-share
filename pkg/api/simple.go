@@ -9,8 +9,8 @@ import (
 )
 
 type SimpleResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int                 `json:"code"`
+	Message string              `json:"message"`
 	Writer  http.ResponseWriter `json:"-"`
 }
 
@@ -63,16 +63,11 @@ func (s *SimpleResponse) InternalError() {
 
 func (s *SimpleResponse) NotFound(msg string) {
 	s.Code = http.StatusNotFound
-	s.Message = "Not found"
-
-	if msg != "" {
-		s.Message = msg
-	}
+	s.Message = msg
 
 	s.JSON()
 }
 
-// Message required!
 func (s *SimpleResponse) Conflict(msg string) {
 	s.Code = http.StatusConflict
 	s.Message = msg
