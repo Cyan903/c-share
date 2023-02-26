@@ -157,6 +157,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	var files []string
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	fileDecoder := json.NewDecoder(r.Body)
 	response := api.SimpleResponse{Writer: w}
@@ -171,10 +172,20 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check dups
+	sarg := make(map[string]bool)
+
+	for _, v := range files {
+		if _, has := sarg[v]; has {
+			response.BadRequest("Duplicate IDs!")
+			return
+		}
+
+		sarg[v] = false
+	}
+
 	// Does user own files / Do they exist?
 	uid, err := strconv.Atoi(id.Issuer)
-
-	// TODO: Check for dups
 
 	if err != nil {
 		response.InternalError()
