@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -42,10 +41,10 @@ func TokenCheck(next http.Handler) http.Handler {
 	})
 }
 
-// TODO: Improve
 func WhoAmI(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
+	json := api.AdvancedResponse{Writer: w}
 	abt, err := database.About(id.Issuer)
 
 	if err != nil {
@@ -53,7 +52,15 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(fmt.Sprintf("%d, %s, %s", abt.ID, abt.Nickname, abt.Register))
+	json.Code = http.StatusOK
+	json.Count = 3
+	json.Data = map[string]string{
+		"ID":       strconv.Itoa(abt.ID),
+		"Nickname": abt.Nickname,
+		"Register": abt.Register,
+	}
+
+	json.JSON()
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
