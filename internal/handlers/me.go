@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -135,7 +135,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer tfile.Close()
-	fbytes, err := ioutil.ReadAll(file)
+	fbytes, err := io.ReadAll(file)
 
 	if err != nil {
 		response.InternalError()

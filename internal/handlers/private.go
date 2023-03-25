@@ -11,7 +11,6 @@ import (
 )
 
 func FilesListing(w http.ResponseWriter, r *http.Request) {
-	// ?
 	// page = 0
 	// listing = any, public, private, unlisted
 	// type = any, text/html

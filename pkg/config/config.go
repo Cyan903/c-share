@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/Cyan903/c-share/pkg/log"
@@ -10,19 +9,19 @@ import (
 )
 
 type Conf struct {
-	DSN       string `yaml:"DSN,omitempty"`
-	Port      int    `yaml:"PORT,omitempty"`
-	Mode      string `yaml:"MODE,omitempty"`
-	JWTSecret string `yaml:"SECRET,omitempty"`
-	UploadLimit int64 `yaml:"UPLOAD_LIMIT,omitempty"`
-	UploadPath string `yaml:"UPLOAD_PATH,omitempty"`
+	DSN         string `yaml:"DSN,omitempty"`
+	Port        int    `yaml:"PORT,omitempty"`
+	Mode        string `yaml:"MODE,omitempty"`
+	JWTSecret   string `yaml:"SECRET,omitempty"`
+	UploadLimit int64  `yaml:"UPLOAD_LIMIT,omitempty"`
+	UploadPath  string `yaml:"UPLOAD_PATH,omitempty"`
 }
 
 var Data Conf
 var Dev bool
 
 func LoadConfig() Conf {
-	config, err := ioutil.ReadFile("config.yaml")
+	config, err := os.ReadFile("config.yaml")
 	cfg := Conf{}
 
 	if err != nil {
