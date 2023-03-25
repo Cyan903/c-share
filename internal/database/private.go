@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -91,4 +93,34 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Pu
 	}
 
 	return files, pages, nil
+}
+
+func GetPrivateFile(id, user string) (File, error) {
+	var file File
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	query := Conn.QueryRowContext(c, 
+		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ? AND permissions = 1",
+		id, user,
+	)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&file.ID,
+		&file.User,
+		&file.FileSize,
+		&file.FileType,
+		&file.FilePass,
+		&file.Permissions,
+		&file.CreatedAt,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return file, NotFound
+		}
+
+		log.Error.Println("Error fetching file -", err)
+		return file, err
+	}
+
+	return file, nil
 }

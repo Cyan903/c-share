@@ -1,11 +1,17 @@
 package handlers
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
+	"github.com/Cyan903/c-share/pkg/config"
+	"github.com/Cyan903/c-share/pkg/log"
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/exp/slices"
 )
@@ -71,4 +77,36 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 	json.Count = count
 
 	json.JSON()
+}
+
+func GetPrivate(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	response := api.SimpleResponse{Writer: w}
+	uid := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	file, err := database.GetPrivateFile(id, uid.Issuer)
+
+	if errors.Is(database.NotFound, err) {
+		response.NotFound("File not found!")
+		return
+	} else if err != nil {
+		log.Info.Println(err)
+		response.InternalError()
+		return
+	}
+
+	if file.Permissions != 1 {
+		response.NotFound("File not found!")
+		return
+	}
+
+	p := fmt.Sprintf("%s/%s", config.Data.UploadPath, file.ID)
+
+	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
+		log.Warning.Println("File exists in DB, but not on disk!", p)
+		response.NotFound("File not found!")
+
+		return
+	}
+
+	http.ServeFile(w, r, p)
 }
