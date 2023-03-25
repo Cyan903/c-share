@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,11 +15,15 @@ import (
 
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+	pass := r.URL.Query().Get("pass")
 	response := api.SimpleResponse{Writer: w}
-	file, err := database.GetFile(id)
+	file, err := database.GetFile(id, pass)
 
-	if errors.Is(sql.ErrNoRows, err) {
+	if errors.Is(database.ErrNotFound, err) {
 		response.NotFound("File not found!")
+		return
+	} else if errors.Is(database.ErrBadPW, err) {
+		response.Unauthorized("Invalid password!")
 		return
 	} else if err != nil {
 		response.InternalError()
@@ -30,9 +33,10 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 	if file.Permissions == 1 {
 		response.NotFound("File not found!")
 		return
-	} else if file.Permissions == 2 {
-		// TODO
-		log.Info.Println("Unlisted file hit")
+	}
+
+	if file.Permissions == 0 && pass != "" {
+		response.BadRequest("Password not required!")
 		return
 	}
 

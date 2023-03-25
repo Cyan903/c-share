@@ -31,7 +31,7 @@ func EmailUsed(email string) (bool, error) {
 	defer cancel()
 
 	if err := query.Scan(&inUse); err != nil && err != sql.ErrNoRows {
-		log.Error.Printf("Error in EmailUsed | %s\n", err.Error())
+		log.Error.Println("Error in EmailUsed -", err)
 		return true, err
 	}
 
@@ -44,7 +44,7 @@ func Register(nickname, email, password string) (int64, error) {
 	defer cancel()
 
 	if err != nil {
-		log.Error.Println("Could not hash password!", err)
+		log.Error.Println("Could not hash password -", err)
 		return 0, err
 	}
 
@@ -73,20 +73,20 @@ func Login(email, password string) (Users, error) {
 
 	defer cancel()
 
-	if err == sql.ErrNoRows {
-		log.Error.Println("User does not exist | ", email)
-		return usr, err
+	if errors.Is(err, sql.ErrNoRows) {
+		log.Error.Println("User does not exist -", email)
+		return usr, ErrNotFound
 	} else if err != nil {
-		log.Error.Println("Could not fetch user info |", err)
+		log.Error.Println("Could not fetch user info -", err)
 		return usr, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(password)); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return usr, err
+			return usr, ErrBadPW
 		}
 
-		log.Error.Println("Could not compare password |", err)
+		log.Error.Println("Could not compare password -", err)
 		return usr, err
 	}
 

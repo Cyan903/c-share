@@ -1,17 +1,14 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/auth"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type account struct {
@@ -31,25 +28,25 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 
 	if err := accDecoder.Decode(&acc); err != nil {
-		response.BadRequest(fmt.Sprintf("Could not decode json | %s", err.Error()))
+		response.BadRequest("Invalid JSON!")
 		return
 	}
 
 	// Check nickname
 	if api.ValidateNickname(acc.Nickname) {
-		response.BadRequest("Invalid nickname")
+		response.BadRequest("Invalid nickname!")
 		return
 	}
 
 	// Check password
 	if api.ValidatePassword(acc.Password) {
-		response.BadRequest("Invalid password")
+		response.BadRequest("Invalid password!")
 		return
 	}
 
 	// Check email
 	if api.ValidateEmail(acc.Email) {
-		response.BadRequest("Invalid email")
+		response.BadRequest("Invalid email!")
 		return
 	}
 
@@ -91,31 +88,30 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 
 	if err := usrDecoder.Decode(&usr); err != nil {
-		response.BadRequest(fmt.Sprintf("Could not decode json | %s", err.Error()))
+		response.BadRequest("Invalid JSON!")
 		return
 	}
 
 	// Check password
 	if api.ValidatePassword(usr.Password) {
-		response.BadRequest("Invalid password")
+		response.Unauthorized("Invalid password!")
 		return
 	}
 
 	// Check email
 	if api.ValidateEmail(usr.Email) {
-		response.BadRequest("Invalid email")
+		response.BadRequest("Invalid email!")
 		return
 	}
 
 	// Attempt login
-	// TODO: don't use errors.Is
 	correct, err := database.Login(usr.Email, usr.Password)
 
-	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-		response.Unauthorized("Invalid password")
+	if errors.Is(err, database.ErrBadPW) {
+		response.Unauthorized("Invalid password!")
 		return
-	} else if errors.Is(err, sql.ErrNoRows) {
-		response.Unauthorized("Email does not exist")
+	} else if errors.Is(err, database.ErrNotFound) {
+		response.Unauthorized("Email does not exist!")
 		return
 	} else if err != nil {
 		response.InternalError()

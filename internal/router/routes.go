@@ -16,8 +16,8 @@ func routes() http.Handler {
 		r.Use(handlers.TokenCheck)
 		r.Get("/", handlers.WhoAmI)
 
-		// r.Get("/f", ?) // list files
-		// r.Get("/f/{id}", ?) // private files
+		r.Get("/f", handlers.FilesListing)
+		r.Get("/f/{id}", handlers.GetPrivate) // private files
 		// r.Get("/f/{id}/info", ?) // file info/type
 
 		r.Post("/upload", handlers.Upload)

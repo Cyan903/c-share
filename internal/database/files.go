@@ -3,12 +3,14 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"math/rand"
 	"strings"
 	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/exp/slices"
 )
 
@@ -17,6 +19,7 @@ type File struct {
 	User        int    `json:"user"`
 	FileSize    int64  `json:"file_size"`
 	FileType    string `json:"file_type"`
+	FilePass    string `json:"file_href"`
 	Permissions int    `json:"permissions"`
 	CreatedAt   string `json:"created_at"`
 }
@@ -33,7 +36,7 @@ func IDUsed(id string) (bool, error) {
 	defer cancel()
 
 	if err := query.Scan(&inUse); err != nil && err != sql.ErrNoRows {
-		log.Error.Printf("Error in IDUsed | %s\n", err.Error())
+		log.Error.Println("Could not check ID -", err)
 		return true, err
 	}
 
@@ -49,7 +52,7 @@ func RandomID() (string, error) {
 		check, err := IDUsed(code)
 
 		if err != nil {
-			log.Error.Printf("Error in RandomID | %s\n", err.Error())
+			log.Error.Println("Error in RandomID -", err)
 			return "", err
 		}
 
@@ -61,9 +64,15 @@ func RandomID() (string, error) {
 	}
 }
 
-func UploadFile(rid, uid string, size int64, fileType string, permission int) error {
+func UploadFile(rid, uid string, size int64, fileType, filePass string, permission int) error {
+	hashedPw, err := bcrypt.GenerateFromPassword([]byte(filePass), bcrypt.DefaultCost)
+	if err != nil {
+		log.Error.Println("Could not hash password!")
+		return err
+	}
+
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	_, err := Conn.ExecContext(c, "INSERT INTO files VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)", rid, uid, size, fileType, permission)
+	_, err = Conn.ExecContext(c, "INSERT INTO files VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)", rid, uid, size, fileType, hashedPw, permission)
 
 	defer cancel()
 
@@ -75,10 +84,10 @@ func UploadFile(rid, uid string, size int64, fileType string, permission int) er
 	return nil
 }
 
-func GetFile(id string) (File, error) {
+func GetFile(id, pass string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, permissions, created_at FROM files WHERE id = ?", id)
+	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ?", id)
 
 	defer cancel()
 
@@ -87,11 +96,27 @@ func GetFile(id string) (File, error) {
 		&file.User,
 		&file.FileSize,
 		&file.FileType,
+		&file.FilePass,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
-		log.Error.Println("Error getting file -", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return file, ErrNotFound
+		}
+
+		log.Error.Println("Error fetching file -", err)
 		return file, err
+	}
+
+	if file.Permissions == 2 {
+		if err := bcrypt.CompareHashAndPassword([]byte(file.FilePass), []byte(pass)); err != nil {
+			if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+				return file, ErrBadPW
+			}
+
+			log.Error.Println("Could not compare passwords -", err)
+			return file, err
+		}
 	}
 
 	return file, nil
@@ -117,7 +142,7 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	row, err := Conn.QueryContext(
-		c, fmt.Sprintf("SELECT id, user, file_size, file_type, permissions, created_at FROM files WHERE id IN (%s)", ids),
+		c, fmt.Sprintf("SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id IN (%s)", ids),
 		args...,
 	)
 
@@ -136,6 +161,7 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 			&file.User,
 			&file.FileSize,
 			&file.FileType,
+			&file.FilePass,
 			&file.Permissions,
 			&file.CreatedAt,
 		); err != nil {

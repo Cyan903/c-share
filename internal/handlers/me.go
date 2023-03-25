@@ -3,8 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -24,14 +23,14 @@ func TokenCheck(next http.Handler) http.Handler {
 		response := api.SimpleResponse{Writer: w}
 
 		if len(token) == 0 {
-			response.Unauthorized("No token provided")
+			response.Unauthorized("No token provided!")
 			return
 		}
 
 		check, err := auth.VerifyToken(token)
 
 		if err != nil {
-			response.Unauthorized("Invalid token")
+			response.Unauthorized("Invalid token!")
 			return
 		}
 
@@ -42,10 +41,10 @@ func TokenCheck(next http.Handler) http.Handler {
 	})
 }
 
-// TODO: Improve
 func WhoAmI(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
+	json := api.AdvancedResponse{Writer: w}
 	abt, err := database.About(id.Issuer)
 
 	if err != nil {
@@ -53,7 +52,15 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.Success(fmt.Sprintf("%d, %s, %s", abt.ID, abt.Nickname, abt.Register))
+	json.Code = http.StatusOK
+	json.Count = 3
+	json.Data = map[string]string{
+		"ID":       strconv.Itoa(abt.ID),
+		"Nickname": abt.Nickname,
+		"Register": abt.Register,
+	}
+
+	json.JSON()
 }
 
 func Upload(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +77,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Accept request
 	upriv, priv := r.URL.Query().Get("perm"), 0
+	pass := r.URL.Query().Get("pass")
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	file, handler, err := r.FormFile("upload")
 
@@ -98,6 +106,17 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Confirm password
+	if pass != "" && priv != 2 {
+		response.BadRequest("Password not required!")
+		return
+	}
+
+	if priv == 2 && api.ValidatePassword(pass) {
+		response.BadRequest("Invalid password!")
+		return
+	}
+
 	// Create ID
 	rid, err := database.RandomID()
 
@@ -116,7 +135,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer tfile.Close()
-	fbytes, err := ioutil.ReadAll(file)
+	fbytes, err := io.ReadAll(file)
 
 	if err != nil {
 		response.InternalError()
@@ -127,9 +146,9 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	tfile.Write(fbytes)
 
 	// Upload to database
-	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), priv); err != nil {
+	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), pass, priv); err != nil {
 		response.InternalError()
-		log.Error.Println("Could not add file to database", err)
+		log.Error.Println("Could not add file to database -", err)
 		return
 	}
 
@@ -138,12 +157,13 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	var files []string
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	fileDecoder := json.NewDecoder(r.Body)
 	response := api.SimpleResponse{Writer: w}
 
 	if err := fileDecoder.Decode(&files); err != nil {
-		response.BadRequest(fmt.Sprintf("Could not decode json | %s", err.Error()))
+		response.BadRequest("Invalid JSON!")
 		return
 	}
 
@@ -152,12 +172,24 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check dups
+	sarg := make(map[string]bool)
+
+	for _, v := range files {
+		if _, has := sarg[v]; has {
+			response.BadRequest("Duplicate IDs!")
+			return
+		}
+
+		sarg[v] = false
+	}
+
 	// Does user own files / Do they exist?
 	uid, err := strconv.Atoi(id.Issuer)
 
 	if err != nil {
 		response.InternalError()
-		log.Error.Println("Could not convert user ID", err)
+		log.Error.Println("Could not convert user ID -", err)
 		return
 	}
 
@@ -165,7 +197,7 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.InternalError()
-		log.Error.Println("Could not delete files", err)
+		log.Error.Println("Could not delete files -", err)
 		return
 	}
 
@@ -177,14 +209,14 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	// Remove from database/disk
 	if err := database.DeleteFiles(id.Issuer, files); err != nil {
 		response.InternalError()
-		log.Error.Println("Could not remove file from DB", err)
+		log.Error.Println("Could not remove file from DB -", err)
 		return
 	}
 
 	for _, f := range files {
 		if err := os.Remove(config.Data.UploadPath + "/" + f); err != nil {
 			response.InternalError()
-			log.Error.Println("Could not remove file from disk", err)
+			log.Error.Println("Could not remove file from disk -", err)
 			return
 		}
 	}
