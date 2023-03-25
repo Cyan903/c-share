@@ -19,10 +19,10 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 	file, err := database.GetFile(id, pass)
 
-	if errors.Is(database.NotFound, err) {
+	if errors.Is(database.ErrNotFound, err) {
 		response.NotFound("File not found!")
 		return
-	} else if errors.Is(database.BadPW, err) {
+	} else if errors.Is(database.ErrBadPW, err) {
 		response.Unauthorized("Invalid password!")
 		return
 	} else if err != nil {

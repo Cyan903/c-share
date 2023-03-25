@@ -75,7 +75,7 @@ func Login(email, password string) (Users, error) {
 
 	if errors.Is(err, sql.ErrNoRows) {
 		log.Error.Println("User does not exist -", email)
-		return usr, NotFound
+		return usr, ErrNotFound
 	} else if err != nil {
 		log.Error.Println("Could not fetch user info -", err)
 		return usr, err
@@ -83,7 +83,7 @@ func Login(email, password string) (Users, error) {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(usr.Password), []byte(password)); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return usr, BadPW
+			return usr, ErrBadPW
 		}
 
 		log.Error.Println("Could not compare password -", err)

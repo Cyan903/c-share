@@ -85,7 +85,7 @@ func GetPrivate(w http.ResponseWriter, r *http.Request) {
 	uid := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	file, err := database.GetPrivateFile(id, uid.Issuer)
 
-	if errors.Is(database.NotFound, err) {
+	if errors.Is(database.ErrNotFound, err) {
 		response.NotFound("File not found!")
 		return
 	} else if err != nil {

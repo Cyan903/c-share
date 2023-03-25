@@ -9,8 +9,8 @@ import (
 )
 
 var Conn *sql.DB
-var BadPW error = errors.New("Invalid password!")
-var NotFound error = errors.New("Not found!")
+var ErrBadPW error = errors.New("invalid password")
+var ErrNotFound error = errors.New("not found")
 
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)

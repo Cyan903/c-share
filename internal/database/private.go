@@ -115,7 +115,7 @@ func GetPrivateFile(id, user string) (File, error) {
 		&file.CreatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return file, NotFound
+			return file, ErrNotFound
 		}
 
 		log.Error.Println("Error fetching file -", err)

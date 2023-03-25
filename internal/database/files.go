@@ -101,7 +101,7 @@ func GetFile(id, pass string) (File, error) {
 		&file.CreatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return file, NotFound
+			return file, ErrNotFound
 		}
 
 		log.Error.Println("Error fetching file -", err)
@@ -111,7 +111,7 @@ func GetFile(id, pass string) (File, error) {
 	if file.Permissions == 2 {
 		if err := bcrypt.CompareHashAndPassword([]byte(file.FilePass), []byte(pass)); err != nil {
 			if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-				return file, BadPW
+				return file, ErrBadPW
 			}
 
 			log.Error.Println("Could not compare passwords -", err)

@@ -107,10 +107,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Attempt login
 	correct, err := database.Login(usr.Email, usr.Password)
 
-	if errors.Is(err, database.BadPW) {
+	if errors.Is(err, database.ErrBadPW) {
 		response.Unauthorized("Invalid password!")
 		return
-	} else if errors.Is(err, database.NotFound) {
+	} else if errors.Is(err, database.ErrNotFound) {
 		response.Unauthorized("Email does not exist!")
 		return
 	} else if err != nil {
