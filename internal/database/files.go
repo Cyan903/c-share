@@ -127,9 +127,9 @@ func GetFile(id, pass string) (File, error) {
 func OwnFiles(id []string, uid int) ([]string, error) {
 	var files []File
 	var dbIDs []string
-	var ids string
 	var notOwned []string
 
+	ids := "?"
 	args := make([]interface{}, len(id))
 
 	for i, iid := range id {
@@ -138,8 +138,6 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 
 	if len(id) > 1 {
 		ids = strings.Repeat("?, ", len(id)-1) + "?"
-	} else {
-		ids = "?"
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -194,11 +192,10 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 	return notOwned, nil
 }
 
-// TODO: Clean this up....
 func DeleteFiles(uid string, files []string) error {
-	var purgeList string
-
+	purgeList := "?"
 	args := make([]interface{}, len(files)+1)
+	
 	args[len(args)-1] = uid
 
 	for i, iid := range files {
@@ -207,8 +204,6 @@ func DeleteFiles(uid string, files []string) error {
 
 	if len(files) > 1 {
 		purgeList = strings.Repeat("?, ", len(files)-1) + "?"
-	} else {
-		purgeList = "?"
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
