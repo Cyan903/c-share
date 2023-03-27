@@ -89,7 +89,6 @@ func GetPrivate(w http.ResponseWriter, r *http.Request) {
 		response.NotFound("File not found!")
 		return
 	} else if err != nil {
-		log.Info.Println(err)
 		response.InternalError()
 		return
 	}
@@ -104,4 +103,25 @@ func GetPrivate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, p)
+}
+
+func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	file := chi.URLParam(r, "id")
+
+	response := api.SimpleResponse{Writer: w}
+	json := api.AdvancedResponse{Writer: w}
+
+	info, err := database.FileInfo(id.Issuer, file)
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	json.Code = 200
+	json.Count = 5
+	json.Data = info
+
+	json.JSON()
 }

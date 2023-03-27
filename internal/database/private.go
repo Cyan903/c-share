@@ -12,7 +12,7 @@ import (
 
 var PageLen = 10
 
-type PublicFile struct {
+type FileData struct {
 	ID          string `json:"id"`
 	FileSize    int64  `json:"file_size"`
 	FileType    string `json:"file_type"`
@@ -20,8 +20,8 @@ type PublicFile struct {
 	CreatedAt   string `json:"created_at"`
 }
 
-func FileListing(uid string, page int, perm, fileType, order, sort string) ([]PublicFile, int, error) {
-	var files []PublicFile
+func FileListing(uid string, page int, perm, fileType, order, sort string) ([]FileData, int, error) {
+	var files []FileData
 	var pages int
 	var fileFilter = "file_type ="
 
@@ -71,7 +71,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Pu
 	}
 
 	for row.Next() {
-		var file PublicFile
+		var file FileData
 
 		if err := row.Scan(
 			&file.ID,
@@ -98,7 +98,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Pu
 func GetPrivateFile(id, user string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	query := Conn.QueryRowContext(c, 
+	query := Conn.QueryRowContext(c,
 		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		id, user,
 	)
@@ -119,6 +119,34 @@ func GetPrivateFile(id, user string) (File, error) {
 		}
 
 		log.Error.Println("Error fetching file -", err)
+		return file, err
+	}
+
+	return file, nil
+}
+
+func FileInfo(uid, fileID string) (FileData, error) {
+	var file FileData
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	query := Conn.QueryRowContext(c,
+		"SELECT id, file_size, file_type, permissions, created_at FROM files WHERE id = ? AND user = ?",
+		fileID, uid,
+	)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&file.ID,
+		&file.FileSize,
+		&file.FileType,
+		&file.Permissions,
+		&file.CreatedAt,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return file, ErrNotFound
+		}
+
+		log.Error.Println("Error fetching file info -", err)
 		return file, err
 	}
 

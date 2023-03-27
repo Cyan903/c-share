@@ -18,7 +18,7 @@ func routes() http.Handler {
 
 		r.Get("/f", handlers.FilesListing)
 		r.Get("/f/{id}", handlers.GetPrivate)
-		// r.Get("/f/{id}/info", ?) // file info/type
+		r.Get("/f/{id}/info", handlers.PrivateFileInfo)
 
 		r.Post("/upload", handlers.Upload)
 		r.Delete("/upload", handlers.DeleteUpload)
