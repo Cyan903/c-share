@@ -88,7 +88,7 @@ func UploadFile(rid, uid string, size int64, fileType, filePass, comment string,
 func GetFile(id, pass string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ?", id)
+	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ?", id)
 
 	defer cancel()
 
@@ -98,6 +98,7 @@ func GetFile(id, pass string) (File, error) {
 		&file.FileSize,
 		&file.FileType,
 		&file.FilePass,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {

@@ -16,10 +16,12 @@ type FileData struct {
 	ID          string `json:"id"`
 	FileSize    int64  `json:"file_size"`
 	FileType    string `json:"file_type"`
+	FileComment string `json:"file_comment"`
 	Permissions int    `json:"permissions"`
 	CreatedAt   string `json:"created_at"`
 }
 
+// TODO: Search by comment
 func FileListing(uid string, page int, perm, fileType, order, sort string) ([]FileData, int, error) {
 	var files []FileData
 	var pages int
@@ -46,7 +48,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 
 	search := fmt.Sprintf(
 		`
-			SELECT id, file_size, file_type, permissions, created_at FROM files
+			SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files
 			WHERE user = ? %s AND %s ?
 			ORDER BY %s %s
 			LIMIT ?, %d;
@@ -77,6 +79,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 			&file.ID,
 			&file.FileSize,
 			&file.FileType,
+			&file.FileComment,
 			&file.Permissions,
 			&file.CreatedAt,
 		); err != nil {
@@ -99,7 +102,7 @@ func GetPrivateFile(id, user string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	query := Conn.QueryRowContext(c,
-		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ?",
+		"SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		id, user,
 	)
 
@@ -111,6 +114,7 @@ func GetPrivateFile(id, user string) (File, error) {
 		&file.FileSize,
 		&file.FileType,
 		&file.FilePass,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
@@ -129,7 +133,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 	var file FileData
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	query := Conn.QueryRowContext(c,
-		"SELECT id, file_size, file_type, permissions, created_at FROM files WHERE id = ? AND user = ?",
+		"SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		fileID, uid,
 	)
 
@@ -139,6 +143,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 		&file.ID,
 		&file.FileSize,
 		&file.FileType,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
