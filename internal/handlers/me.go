@@ -78,10 +78,16 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	// Accept request
 	upriv, priv := r.URL.Query().Get("perm"), 0
 	pass := r.URL.Query().Get("pass")
+	comment := r.URL.Query().Get("comment")
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	file, handler, err := r.FormFile("upload")
 
-	// Accept request
+	if api.ValidateFilename(comment) {
+		response.BadRequest("Invalid file comment!")
+		return
+	}
+
 	switch upriv {
 	case "public":
 		priv = 0
@@ -146,7 +152,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	tfile.Write(fbytes)
 
 	// Upload to database
-	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), pass, priv); err != nil {
+	if err := database.UploadFile(rid, id.Issuer, handler.Size, handler.Header.Get("Content-Type"), pass, comment, priv); err != nil {
 		response.InternalError()
 		log.Error.Println("Could not add file to database -", err)
 		return

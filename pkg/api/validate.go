@@ -21,3 +21,8 @@ func ValidatePassword(password string) bool {
 func ValidateNickname(nick string) bool {
 	return !regexp.MustCompile(`^[A-Za-z]+$`).MatchString(nick) || len(nick) > 10 || len(nick) < 3
 }
+
+// Must be 1-100 in length
+func ValidateFilename(name string) bool {
+	return len(name) > 100 || len(name) <= 0
+}
