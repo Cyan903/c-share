@@ -26,7 +26,7 @@ func routes() http.Handler {
 
 	mux.Post("/auth/register", handlers.Register)
 	mux.Post("/auth/login", handlers.Login)
-	
+
 	// mux.Get("/f", ?) // server stats (dev only)
 	mux.Get("/f/{id}", handlers.GetFile)
 

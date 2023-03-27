@@ -16,13 +16,12 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// ? page = 0
+// & listing = [any, public, private, unlisted]
+// & type = [any, text/html]
+// & order = [any, size, type, permission, date]
+// & sort = [asc, desc]
 func FilesListing(w http.ResponseWriter, r *http.Request) {
-	// page = 0
-	// listing = any, public, private, unlisted
-	// type = any, text/html
-	// order = any, size, type, permission, date
-	// sort = asc/desc
-
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
 	json := api.AdvancedResponse{Writer: w}
@@ -114,7 +113,10 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 
 	info, err := database.FileInfo(id.Issuer, file)
 
-	if err != nil {
+	if errors.Is(database.ErrNotFound, err) {
+		response.NotFound("File not found!")
+		return
+	} else if err != nil {
 		response.InternalError()
 		return
 	}
