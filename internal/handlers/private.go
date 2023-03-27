@@ -94,11 +94,6 @@ func GetPrivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if file.Permissions != 1 {
-		response.NotFound("File not found!")
-		return
-	}
-
 	p := fmt.Sprintf("%s/%s", config.Data.UploadPath, file.ID)
 
 	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {

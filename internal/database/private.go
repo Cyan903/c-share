@@ -99,7 +99,7 @@ func GetPrivateFile(id, user string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	query := Conn.QueryRowContext(c, 
-		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ? AND permissions = 1",
+		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		id, user,
 	)
 
