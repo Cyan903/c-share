@@ -19,8 +19,9 @@ import (
 // ? page = 0
 // & listing = [any, public, private, unlisted]
 // & type = [any, text/html]
-// & order = [any, size, type, permission, date]
+// & order = [any, size, type, comment, permission, date]
 // & sort = [asc, desc]
+// & search = ? (optional)
 func FilesListing(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
@@ -49,7 +50,7 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orders := []string{"any", "size", "type", "permission", "date"}
+	orders := []string{"any", "size", "type", "comment", "permission", "date"}
 	order := r.URL.Query().Get("order")
 
 	if !slices.Contains(orders, order) {
@@ -64,7 +65,14 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort)
+	search := r.URL.Query().Get("search")
+
+	if len(search) > 99 {
+		response.BadRequest("Invalid search!")
+		return
+	}
+
+	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort, search)
 
 	if err != nil {
 		response.InternalError()
@@ -122,7 +130,7 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Code = 200
-	json.Count = 5
+	json.Count = 6
 	json.Data = info
 
 	json.JSON()

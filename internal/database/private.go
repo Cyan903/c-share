@@ -21,11 +21,11 @@ type FileData struct {
 	CreatedAt   string `json:"created_at"`
 }
 
-// TODO: Search by comment
-func FileListing(uid string, page int, perm, fileType, order, sort string) ([]FileData, int, error) {
+func FileListing(uid string, page int, perm, fileType, order, sort, comment string) ([]FileData, int, error) {
 	var files []FileData
 	var pages int
 	var fileFilter = "file_type ="
+	var searchFilter = "file_comment LIKE"
 
 	perms := map[string]string{
 		"any":      "",
@@ -38,6 +38,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 		"any":        "user",
 		"size":       "file_size",
 		"type":       "file_type",
+		"comment":    "file_comment",
 		"permission": "permissions",
 		"date":       "created_at",
 	}
@@ -46,13 +47,17 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 		fileFilter = "id !="
 	}
 
+	if comment == "" {
+		searchFilter = "id !="
+	}
+
 	search := fmt.Sprintf(
 		`
 			SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files
-			WHERE user = ? %s AND %s ?
+			WHERE user = ? %s AND %s ? AND (%s ?)
 			ORDER BY %s %s
 			LIMIT ?, %d;
-		`, perms[perm], fileFilter, orders[order], sort, PageLen,
+		`, perms[perm], fileFilter, searchFilter, orders[order], sort, PageLen,
 	)
 
 	count := fmt.Sprintf(
@@ -63,7 +68,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 	)
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	row, err := Conn.QueryContext(c, search, uid, fileType, page*PageLen)
+	row, err := Conn.QueryContext(c, search, uid, fileType, "%"+comment+"%", page*PageLen)
 
 	defer cancel()
 
