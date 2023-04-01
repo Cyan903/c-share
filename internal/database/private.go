@@ -162,3 +162,13 @@ func FileInfo(uid, fileID string) (FileData, error) {
 
 	return file, nil
 }
+
+func UpdateFileInfo(id, user, password, comment string, permission int) (bool, error) {
+	_, err := GetPrivateFile(id, user)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

@@ -135,3 +135,43 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 
 	json.JSON()
 }
+
+func EditFileInfo(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	file := chi.URLParam(r, "id")
+	response := api.SimpleResponse{Writer: w}
+
+	password := r.URL.Query().Get("password")
+	comment := r.URL.Query().Get("comment")
+	upriv, priv := r.URL.Query().Get("perm"), 0
+
+	switch upriv {
+	case "public":
+		priv = 0
+	case "private":
+		priv = 1
+	case "unlisted":
+		priv = 2
+	default:
+		response.BadRequest("Invalid permission!")
+		return
+	}
+
+	if upriv != "unlisted" && password != "" {
+		response.BadRequest("Cannot have password on public/private files!")
+		return
+	} else if upriv == "unlisted" && password == "" {
+		response.BadRequest("Password required for unlisted files!")
+		return
+	}
+
+	_, err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
+
+	if errors.Is(database.ErrNotFound, err) {
+		response.NotFound("File not found!")
+		return
+	} else if err != nil {
+		response.InternalError()
+		return
+	}
+}
