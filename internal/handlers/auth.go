@@ -33,19 +33,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check nickname
-	if api.ValidateNickname(acc.Nickname) {
+	if api.InvalidNickname(acc.Nickname) {
 		response.BadRequest("Invalid nickname!")
 		return
 	}
 
 	// Check password
-	if api.ValidatePassword(acc.Password) {
+	if api.InvalidPassword(acc.Password) {
 		response.BadRequest("Invalid password!")
 		return
 	}
 
 	// Check email
-	if api.ValidateEmail(acc.Email) {
+	if api.InvalidEmail(acc.Email) {
 		response.BadRequest("Invalid email!")
 		return
 	}
@@ -93,13 +93,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check password
-	if api.ValidatePassword(usr.Password) {
+	if api.InvalidPassword(usr.Password) {
 		response.Unauthorized("Invalid password!")
 		return
 	}
 
 	// Check email
-	if api.ValidateEmail(usr.Email) {
+	if api.InvalidEmail(usr.Email) {
 		response.BadRequest("Invalid email!")
 		return
 	}

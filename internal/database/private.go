@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
 	"golang.org/x/crypto/bcrypt"
@@ -68,7 +67,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 		`, perms[perm], fileFilter,
 	)
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	row, err := Conn.QueryContext(c, search, uid, fileType, "%"+comment+"%", page*PageLen)
 
 	defer cancel()
@@ -106,7 +105,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 
 func GetPrivateFile(id, user string) (File, error) {
 	var file File
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	query := Conn.QueryRowContext(c,
 		"SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		id, user,
@@ -137,7 +136,7 @@ func GetPrivateFile(id, user string) (File, error) {
 
 func FileInfo(uid, fileID string) (FileData, error) {
 	var file FileData
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	query := Conn.QueryRowContext(c,
 		"SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		fileID, uid,
@@ -171,13 +170,13 @@ func UpdateFileInfo(id, user, password, comment string, permission int) (bool, e
 	}
 
 	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	
+
 	if err != nil {
 		log.Error.Println("Could not hash password!")
 		return false, err
 	}
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	_, err = Conn.ExecContext(
 		c, `
 			UPDATE files SET

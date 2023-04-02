@@ -31,7 +31,7 @@ func init() {
 
 func IDUsed(id string) (bool, error) {
 	var inUse bool
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	query := Conn.QueryRowContext(c, "SELECT 1 FROM files WHERE id = ?", id)
 
 	defer cancel()
@@ -72,7 +72,7 @@ func UploadFile(rid, uid string, size int64, fileType, filePass, comment string,
 		return err
 	}
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	_, err = Conn.ExecContext(c, "INSERT INTO files VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)", rid, uid, size, fileType, hashedPw, comment, permission)
 
 	defer cancel()
@@ -87,7 +87,7 @@ func UploadFile(rid, uid string, size int64, fileType, filePass, comment string,
 
 func GetFile(id, pass string) (File, error) {
 	var file File
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ?", id)
 
 	defer cancel()
@@ -140,7 +140,7 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 		ids = strings.Repeat("?, ", len(id)-1) + "?"
 	}
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	row, err := Conn.QueryContext(
 		c, fmt.Sprintf("SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id IN (%s)", ids),
 		args...,
@@ -195,7 +195,7 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 func DeleteFiles(uid string, files []string) error {
 	purgeList := "?"
 	args := make([]interface{}, len(files)+1)
-	
+
 	args[len(args)-1] = uid
 
 	for i, iid := range files {
@@ -206,7 +206,7 @@ func DeleteFiles(uid string, files []string) error {
 		purgeList = strings.Repeat("?, ", len(files)-1) + "?"
 	}
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	_, err := Conn.ExecContext(
 		c, fmt.Sprintf("DELETE FROM files WHERE id IN (%s) AND user = ?", purgeList),
 		args...,

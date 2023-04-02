@@ -157,12 +157,12 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if api.ValidateFilename(comment) {
+	if api.InvalidFilename(comment) {
 		response.BadRequest("Invalid file comment!")
 		return
 	}
 
-	if priv == 2 && api.ValidatePassword(password) {
+	if priv == 2 && api.InvalidPassword(password) {
 		response.BadRequest("Invalid password!")
 		return
 	}

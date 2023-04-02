@@ -83,7 +83,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	file, handler, err := r.FormFile("upload")
 
-	if api.ValidateFilename(comment) {
+	if api.InvalidFilename(comment) {
 		response.BadRequest("Invalid file comment!")
 		return
 	}
@@ -118,7 +118,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if priv == 2 && api.ValidatePassword(pass) {
+	if priv == 2 && api.InvalidPassword(pass) {
 		response.BadRequest("Invalid password!")
 		return
 	}

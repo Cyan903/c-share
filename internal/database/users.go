@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
 	"golang.org/x/crypto/bcrypt"
@@ -25,7 +24,7 @@ type Info struct {
 
 func EmailUsed(email string) (bool, error) {
 	var inUse bool
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	query := Conn.QueryRowContext(c, "SELECT 1 FROM users WHERE email = ?", email)
 
 	defer cancel()
@@ -40,7 +39,7 @@ func EmailUsed(email string) (bool, error) {
 
 func Register(nickname, email, password string) (int64, error) {
 	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 
 	if err != nil {
@@ -62,7 +61,7 @@ func Register(nickname, email, password string) (int64, error) {
 func Login(email, password string) (Users, error) {
 	var usr Users
 
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	res := Conn.QueryRowContext(c, "SELECT id, nickname, email, pw_bcrypt FROM users WHERE email = ?", email)
 	err := res.Scan(
 		&usr.ID,
@@ -95,7 +94,7 @@ func Login(email, password string) (Users, error) {
 
 func About(uid string) (Info, error) {
 	var abt Info
-	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	res := Conn.QueryRowContext(c, "SELECT id, nickname, created_at FROM users WHERE id = ?", uid)
 
 	defer cancel()

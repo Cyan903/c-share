@@ -3,12 +3,14 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var Conn *sql.DB
+var DefaultTimeout = 3 * time.Second
 var ErrBadPW error = errors.New("invalid password")
 var ErrNotFound error = errors.New("not found")
 
