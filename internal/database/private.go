@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var PageLen = 10
@@ -164,9 +165,33 @@ func FileInfo(uid, fileID string) (FileData, error) {
 }
 
 func UpdateFileInfo(id, user, password, comment string, permission int) (bool, error) {
-	_, err := GetPrivateFile(id, user)
+	if _, err := GetPrivateFile(id, user); err != nil {
+		log.Info.Println("Could not update file info -", err)
+		return false, err
+	}
+
+	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	
+	if err != nil {
+		log.Error.Println("Could not hash password!")
+		return false, err
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err = Conn.ExecContext(
+		c, `
+			UPDATE files SET
+				file_pass = ?,
+				file_comment = ?,
+				permissions = ?
+			WHERE id = ? AND user = ?
+		`, hashedPw, comment, permission, id, user,
+	)
+
+	defer cancel()
 
 	if err != nil {
+		log.Info.Println("Could not update file info -", err)
 		return false, err
 	}
 

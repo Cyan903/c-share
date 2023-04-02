@@ -157,6 +157,16 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if api.ValidateFilename(comment) {
+		response.BadRequest("Invalid file comment!")
+		return
+	}
+
+	if priv == 2 && api.ValidatePassword(password) {
+		response.BadRequest("Invalid password!")
+		return
+	}
+
 	if upriv != "unlisted" && password != "" {
 		response.BadRequest("Cannot have password on public/private files!")
 		return
@@ -165,7 +175,7 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
+	success, err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
 
 	if errors.Is(database.ErrNotFound, err) {
 		response.NotFound("File not found!")
@@ -174,4 +184,11 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		response.InternalError()
 		return
 	}
+
+	if success {
+		response.Success("File has been updated!")
+		return
+	}
+
+	response.InternalError()
 }
