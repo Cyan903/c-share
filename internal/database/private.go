@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var PageLen = 10
@@ -16,14 +17,16 @@ type FileData struct {
 	ID          string `json:"id"`
 	FileSize    int64  `json:"file_size"`
 	FileType    string `json:"file_type"`
+	FileComment string `json:"file_comment"`
 	Permissions int    `json:"permissions"`
 	CreatedAt   string `json:"created_at"`
 }
 
-func FileListing(uid string, page int, perm, fileType, order, sort string) ([]FileData, int, error) {
+func FileListing(uid string, page int, perm, fileType, order, sort, comment string) ([]FileData, int, error) {
 	var files []FileData
 	var pages int
 	var fileFilter = "file_type ="
+	var searchFilter = "file_comment LIKE"
 
 	perms := map[string]string{
 		"any":      "",
@@ -36,6 +39,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 		"any":        "user",
 		"size":       "file_size",
 		"type":       "file_type",
+		"comment":    "file_comment",
 		"permission": "permissions",
 		"date":       "created_at",
 	}
@@ -44,13 +48,17 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 		fileFilter = "id !="
 	}
 
+	if comment == "" {
+		searchFilter = "id !="
+	}
+
 	search := fmt.Sprintf(
 		`
-			SELECT id, file_size, file_type, permissions, created_at FROM files
-			WHERE user = ? %s AND %s ?
+			SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files
+			WHERE user = ? %s AND %s ? AND (%s ?)
 			ORDER BY %s %s
 			LIMIT ?, %d;
-		`, perms[perm], fileFilter, orders[order], sort, PageLen,
+		`, perms[perm], fileFilter, searchFilter, orders[order], sort, PageLen,
 	)
 
 	count := fmt.Sprintf(
@@ -61,7 +69,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 	)
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	row, err := Conn.QueryContext(c, search, uid, fileType, page*PageLen)
+	row, err := Conn.QueryContext(c, search, uid, fileType, "%"+comment+"%", page*PageLen)
 
 	defer cancel()
 
@@ -77,6 +85,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort string) ([]Fi
 			&file.ID,
 			&file.FileSize,
 			&file.FileType,
+			&file.FileComment,
 			&file.Permissions,
 			&file.CreatedAt,
 		); err != nil {
@@ -99,7 +108,7 @@ func GetPrivateFile(id, user string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	query := Conn.QueryRowContext(c,
-		"SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ? AND user = ?",
+		"SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		id, user,
 	)
 
@@ -111,6 +120,7 @@ func GetPrivateFile(id, user string) (File, error) {
 		&file.FileSize,
 		&file.FileType,
 		&file.FilePass,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
@@ -129,7 +139,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 	var file FileData
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	query := Conn.QueryRowContext(c,
-		"SELECT id, file_size, file_type, permissions, created_at FROM files WHERE id = ? AND user = ?",
+		"SELECT id, file_size, file_type, file_comment, permissions, created_at FROM files WHERE id = ? AND user = ?",
 		fileID, uid,
 	)
 
@@ -139,6 +149,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 		&file.ID,
 		&file.FileSize,
 		&file.FileType,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
@@ -151,4 +162,38 @@ func FileInfo(uid, fileID string) (FileData, error) {
 	}
 
 	return file, nil
+}
+
+func UpdateFileInfo(id, user, password, comment string, permission int) (bool, error) {
+	if _, err := GetPrivateFile(id, user); err != nil {
+		log.Info.Println("Could not update file info -", err)
+		return false, err
+	}
+
+	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	
+	if err != nil {
+		log.Error.Println("Could not hash password!")
+		return false, err
+	}
+
+	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	_, err = Conn.ExecContext(
+		c, `
+			UPDATE files SET
+				file_pass = ?,
+				file_comment = ?,
+				permissions = ?
+			WHERE id = ? AND user = ?
+		`, hashedPw, comment, permission, id, user,
+	)
+
+	defer cancel()
+
+	if err != nil {
+		log.Info.Println("Could not update file info -", err)
+		return false, err
+	}
+
+	return true, nil
 }

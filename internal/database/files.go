@@ -19,7 +19,8 @@ type File struct {
 	User        int    `json:"user"`
 	FileSize    int64  `json:"file_size"`
 	FileType    string `json:"file_type"`
-	FilePass    string `json:"file_href"`
+	FilePass    string `json:"file_pass"`
+	FileComment string `json:"file_comment"`
 	Permissions int    `json:"permissions"`
 	CreatedAt   string `json:"created_at"`
 }
@@ -64,7 +65,7 @@ func RandomID() (string, error) {
 	}
 }
 
-func UploadFile(rid, uid string, size int64, fileType, filePass string, permission int) error {
+func UploadFile(rid, uid string, size int64, fileType, filePass, comment string, permission int) error {
 	hashedPw, err := bcrypt.GenerateFromPassword([]byte(filePass), bcrypt.DefaultCost)
 	if err != nil {
 		log.Error.Println("Could not hash password!")
@@ -72,7 +73,7 @@ func UploadFile(rid, uid string, size int64, fileType, filePass string, permissi
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	_, err = Conn.ExecContext(c, "INSERT INTO files VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)", rid, uid, size, fileType, hashedPw, permission)
+	_, err = Conn.ExecContext(c, "INSERT INTO files VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)", rid, uid, size, fileType, hashedPw, comment, permission)
 
 	defer cancel()
 
@@ -87,7 +88,7 @@ func UploadFile(rid, uid string, size int64, fileType, filePass string, permissi
 func GetFile(id, pass string) (File, error) {
 	var file File
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id = ?", id)
+	query := Conn.QueryRowContext(c, "SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id = ?", id)
 
 	defer cancel()
 
@@ -97,6 +98,7 @@ func GetFile(id, pass string) (File, error) {
 		&file.FileSize,
 		&file.FileType,
 		&file.FilePass,
+		&file.FileComment,
 		&file.Permissions,
 		&file.CreatedAt,
 	); err != nil {
@@ -125,9 +127,9 @@ func GetFile(id, pass string) (File, error) {
 func OwnFiles(id []string, uid int) ([]string, error) {
 	var files []File
 	var dbIDs []string
-	var ids string
 	var notOwned []string
 
+	ids := "?"
 	args := make([]interface{}, len(id))
 
 	for i, iid := range id {
@@ -136,13 +138,11 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 
 	if len(id) > 1 {
 		ids = strings.Repeat("?, ", len(id)-1) + "?"
-	} else {
-		ids = "?"
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	row, err := Conn.QueryContext(
-		c, fmt.Sprintf("SELECT id, user, file_size, file_type, file_pass, permissions, created_at FROM files WHERE id IN (%s)", ids),
+		c, fmt.Sprintf("SELECT id, user, file_size, file_type, file_pass, file_comment, permissions, created_at FROM files WHERE id IN (%s)", ids),
 		args...,
 	)
 
@@ -162,6 +162,7 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 			&file.FileSize,
 			&file.FileType,
 			&file.FilePass,
+			&file.FileComment,
 			&file.Permissions,
 			&file.CreatedAt,
 		); err != nil {
@@ -192,9 +193,9 @@ func OwnFiles(id []string, uid int) ([]string, error) {
 }
 
 func DeleteFiles(uid string, files []string) error {
-	var purgeList string
-
+	purgeList := "?"
 	args := make([]interface{}, len(files)+1)
+	
 	args[len(args)-1] = uid
 
 	for i, iid := range files {
@@ -203,8 +204,6 @@ func DeleteFiles(uid string, files []string) error {
 
 	if len(files) > 1 {
 		purgeList = strings.Repeat("?, ", len(files)-1) + "?"
-	} else {
-		purgeList = "?"
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), 3*time.Second)

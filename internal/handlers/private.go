@@ -19,8 +19,9 @@ import (
 // ? page = 0
 // & listing = [any, public, private, unlisted]
 // & type = [any, text/html]
-// & order = [any, size, type, permission, date]
+// & order = [any, size, type, comment, permission, date]
 // & sort = [asc, desc]
+// & search = ? (optional)
 func FilesListing(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
@@ -49,7 +50,7 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orders := []string{"any", "size", "type", "permission", "date"}
+	orders := []string{"any", "size", "type", "comment", "permission", "date"}
 	order := r.URL.Query().Get("order")
 
 	if !slices.Contains(orders, order) {
@@ -64,7 +65,14 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort)
+	search := r.URL.Query().Get("search")
+
+	if len(search) > 99 {
+		response.BadRequest("Invalid search!")
+		return
+	}
+
+	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort, search)
 
 	if err != nil {
 		response.InternalError()
@@ -122,8 +130,65 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Code = 200
-	json.Count = 5
+	json.Count = 6
 	json.Data = info
 
 	json.JSON()
+}
+
+func EditFileInfo(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	file := chi.URLParam(r, "id")
+	response := api.SimpleResponse{Writer: w}
+
+	password := r.URL.Query().Get("password")
+	comment := r.URL.Query().Get("comment")
+	upriv, priv := r.URL.Query().Get("perm"), 0
+
+	switch upriv {
+	case "public":
+		priv = 0
+	case "private":
+		priv = 1
+	case "unlisted":
+		priv = 2
+	default:
+		response.BadRequest("Invalid permission!")
+		return
+	}
+
+	if api.ValidateFilename(comment) {
+		response.BadRequest("Invalid file comment!")
+		return
+	}
+
+	if priv == 2 && api.ValidatePassword(password) {
+		response.BadRequest("Invalid password!")
+		return
+	}
+
+	if upriv != "unlisted" && password != "" {
+		response.BadRequest("Cannot have password on public/private files!")
+		return
+	} else if upriv == "unlisted" && password == "" {
+		response.BadRequest("Password required for unlisted files!")
+		return
+	}
+
+	success, err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
+
+	if errors.Is(database.ErrNotFound, err) {
+		response.NotFound("File not found!")
+		return
+	} else if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if success {
+		response.Success("File has been updated!")
+		return
+	}
+
+	response.InternalError()
 }
