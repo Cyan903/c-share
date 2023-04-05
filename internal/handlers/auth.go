@@ -24,8 +24,10 @@ type user struct {
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	var acc account
+
 	accDecoder := json.NewDecoder(r.Body)
 	response := api.SimpleResponse{Writer: w}
+	tokenResponse := api.AdvancedResponse{Writer: w}
 
 	if err := accDecoder.Decode(&acc); err != nil {
 		response.BadRequest("Invalid JSON!")
@@ -78,14 +80,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/raw")
-	w.Write([]byte(token))
+	tokenResponse.Code = http.StatusOK
+	tokenResponse.Data = token
+	tokenResponse.Count = 2
+
+	tokenResponse.JSON()
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var usr user
+
 	usrDecoder := json.NewDecoder(r.Body)
 	response := api.SimpleResponse{Writer: w}
+	tokenResponse := api.AdvancedResponse{Writer: w}
 
 	if err := usrDecoder.Decode(&usr); err != nil {
 		response.BadRequest("Invalid JSON!")
@@ -126,6 +133,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/raw")
-	w.Write([]byte(token))
+	tokenResponse.Code = http.StatusOK
+	tokenResponse.Data = token
+	tokenResponse.Count = 2
+
+	tokenResponse.JSON()
 }
