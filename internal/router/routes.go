@@ -21,6 +21,7 @@ func routes() http.Handler {
 		r.Get("/f/{id}/info", handlers.PrivateFileInfo)
 		r.Patch("/f/{id}/edit", handlers.EditFileInfo)
 
+		// TODO: These should be limited
 		r.Post("/profile/nickname", handlers.UpdateNickname)
 		r.Post("/profile/password", handlers.UpdatePassword)
 		r.Post("/profile/email", handlers.UpdateEmail)

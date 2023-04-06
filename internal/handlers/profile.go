@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Cyan903/c-share/internal/database"
@@ -26,11 +27,30 @@ func UpdateNickname(w http.ResponseWriter, r *http.Request) {
 	response.Success("Nickname has been changed!")
 }
 
-// Requires password
 func UpdatePassword(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	response := api.SimpleResponse{Writer: w}
+
+	oldpass := r.URL.Query().Get("password")
+	newpass := r.URL.Query().Get("replacement")
+
+	if api.InvalidPassword(newpass) {
+		response.Unauthorized("Bad new password!")
+		return
+	}
+
+	if err := database.ChangePassword(id.Issuer, oldpass, newpass); err != nil {
+		if errors.Is(database.ErrBadPW, err) {
+			response.Unauthorized("Invalid password!")
+			return
+		}
+
+		response.InternalError()
+		return
+	}
 }
 
+// Current email must be verified
 func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 	panic("unimplemented")
 }
