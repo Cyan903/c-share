@@ -221,3 +221,25 @@ func DeleteFiles(uid string, files []string) error {
 
 	return nil
 }
+
+// TODO: check if user has enough storage left
+func UpdateStorage(uid string) error {
+	var storage int64
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, "SELECT COALESCE(SUM(file_size), 0) FROM files WHERE user = ?", uid)
+
+	defer cancel()
+
+	if err := query.Scan(&storage); err != nil {
+		log.Error.Println("Error calculating storage -", err)
+		return err
+	}
+
+	if _, err := Conn.ExecContext(c, "UPDATE users SET used_storage = ? WHERE id = ?", storage, uid); err != nil {
+		log.Error.Println("Error updating user's storage value -", err)
+		return err
+	}
+
+	return nil
+}

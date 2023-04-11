@@ -156,6 +156,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Storage
+	if err := database.UpdateStorage(id.Issuer); err != nil {
+		response.InternalError()
+		return
+	}
+
 	response.Success(rid)
 }
 
@@ -223,6 +229,12 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 			log.Error.Println("Could not remove file from disk -", err)
 			return
 		}
+	}
+
+	// Update Storage
+	if err := database.UpdateStorage(id.Issuer); err != nil {
+		response.InternalError()
+		return
 	}
 
 	response.Success("Files removed!")
