@@ -82,7 +82,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	tokenResponse.Code = http.StatusOK
 	tokenResponse.Data = token
-	tokenResponse.Count = 2
+	tokenResponse.Count = 1
 
 	tokenResponse.JSON()
 }
@@ -135,7 +135,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	tokenResponse.Code = http.StatusOK
 	tokenResponse.Data = token
-	tokenResponse.Count = 2
+	tokenResponse.Count = 1
 
 	tokenResponse.JSON()
 }

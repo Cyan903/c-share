@@ -53,15 +53,13 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Code = http.StatusOK
-	json.Count = 3
-	json.Data = map[string]string{
-		"ID":       strconv.Itoa(abt.ID),
-		"Nickname": abt.Nickname,
-		"Register": abt.Register,
-	}
+	json.Count = 4
+	json.Data = abt
 
 	json.JSON()
 }
+
+// TODO: Update used_storage
 
 func Upload(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}

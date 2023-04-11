@@ -11,15 +11,15 @@ import (
 
 type Users struct {
 	ID       int    `json:"id"`
-	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
 	Password string `json:"pw_bcrypt"`
 }
 
 type Info struct {
-	ID       int    `json:"id"`
-	Nickname string `json:"nickname"`
-	Register string `json:"created_at"`
+	Nickname      string `json:"nickname"`
+	EmailVerified int    `json:"email_verified"`
+	UsedStorage   int    `json:"used_storage"`
+	Register      string `json:"created_at"`
 }
 
 func EmailUsed(email string) (bool, error) {
@@ -47,7 +47,7 @@ func Register(nickname, email, password string) (int64, error) {
 		return 0, err
 	}
 
-	user, err := Conn.ExecContext(c, "INSERT INTO users VALUES (0, ?, ?, ?, CURRENT_TIMESTAMP)", nickname, email, hashedPw)
+	user, err := Conn.ExecContext(c, "INSERT INTO users VALUES (0, ?, ?, 0, 0, ?, CURRENT_TIMESTAMP)", nickname, email, hashedPw)
 	uid, uerr := user.LastInsertId()
 
 	if err != nil || uerr != nil {
@@ -62,10 +62,9 @@ func Login(email, password string) (Users, error) {
 	var usr Users
 
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
-	res := Conn.QueryRowContext(c, "SELECT id, nickname, email, pw_bcrypt FROM users WHERE email = ?", email)
+	res := Conn.QueryRowContext(c, "SELECT id, email, pw_bcrypt FROM users WHERE email = ?", email)
 	err := res.Scan(
 		&usr.ID,
-		&usr.Nickname,
 		&usr.Email,
 		&usr.Password,
 	)
@@ -95,13 +94,14 @@ func Login(email, password string) (Users, error) {
 func About(uid string) (Info, error) {
 	var abt Info
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
-	res := Conn.QueryRowContext(c, "SELECT id, nickname, created_at FROM users WHERE id = ?", uid)
+	res := Conn.QueryRowContext(c, "SELECT nickname, email_verified, used_storage, created_at FROM users WHERE id = ?", uid)
 
 	defer cancel()
 
 	if err := res.Scan(
-		&abt.ID,
 		&abt.Nickname,
+		&abt.EmailVerified,
+		&abt.UsedStorage,
 		&abt.Register,
 	); err != nil {
 		log.Error.Println("Could not fetch about -", err)
