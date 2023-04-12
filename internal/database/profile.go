@@ -61,3 +61,17 @@ func ChangePassword(uid, oldpw, newpw string) error {
 
 	return nil
 }
+
+func VerifyUserEmail(uid string) (error) {
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	_, err := Conn.ExecContext(c, "UPDATE users SET email_verified = 1 WHERE id = ?", uid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Info.Println("Could not verify user's email -", err)
+		return err
+	}
+
+	return nil
+}

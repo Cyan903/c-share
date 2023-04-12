@@ -17,6 +17,7 @@ type Users struct {
 
 type Info struct {
 	Nickname      string `json:"nickname"`
+	Email         string `json:"email"`
 	EmailVerified int    `json:"email_verified"`
 	UsedStorage   int    `json:"used_storage"`
 	Register      string `json:"created_at"`
@@ -94,12 +95,13 @@ func Login(email, password string) (Users, error) {
 func About(uid string) (Info, error) {
 	var abt Info
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
-	res := Conn.QueryRowContext(c, "SELECT nickname, email_verified, used_storage, created_at FROM users WHERE id = ?", uid)
+	res := Conn.QueryRowContext(c, "SELECT nickname, email, email_verified, used_storage, created_at FROM users WHERE id = ?", uid)
 
 	defer cancel()
 
 	if err := res.Scan(
 		&abt.Nickname,
+		&abt.Email,
 		&abt.EmailVerified,
 		&abt.UsedStorage,
 		&abt.Register,

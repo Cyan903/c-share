@@ -15,7 +15,7 @@ import (
 
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	pass := r.URL.Query().Get("pass")
+	pass := r.URL.Query().Get("password")
 	response := api.SimpleResponse{Writer: w}
 	file, err := database.GetFile(id, pass)
 
