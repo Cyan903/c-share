@@ -15,7 +15,14 @@ type Conf struct {
 	JWTSecret   string `yaml:"SECRET,omitempty"`
 	UploadLimit int64  `yaml:"UPLOAD_LIMIT,omitempty"`
 	UploadPath  string `yaml:"UPLOAD_PATH,omitempty"`
-	Mail        struct {
+
+	Cache struct {
+		Address  string `yaml:"ADDRESS,omitempty"`
+		Password string `yaml:"Password,omitempty"`
+		DB       int    `yaml:"DB,omitempty"`
+	} `yaml:"CACHE"`
+
+	Mail struct {
 		User     string `yaml:"USER,omitempty"`
 		Password string `yaml:"PASSWORD,omitempty"`
 		Host     string `yaml:"HOST,omitempty"`

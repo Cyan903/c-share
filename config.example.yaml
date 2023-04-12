@@ -8,6 +8,11 @@ SECRET: hello-world
 UPLOAD_LIMIT: 1000000 # bytes
 UPLOAD_PATH: /home/hwk/dev/sand/c-storage
 
+CACHE:
+  ADDRESS: "localhost:6379"
+  PASSWORD: ""
+  DB: 0
+
 MAIL:
   USER: "example@mail.com"
   PASSWORD: "SecretPassword"

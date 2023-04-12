@@ -26,6 +26,9 @@ func routes() http.Handler {
 		r.Post("/profile/password", handlers.UpdatePassword)
 		r.Post("/profile/email", handlers.UpdateEmail)
 
+		r.Get("/profile/verify", handlers.SendVerification)
+		// r.Get("/profile/verify/{id}", handlers.VerifyEmail) // Require password
+
 		r.Post("/upload", handlers.Upload)
 		r.Delete("/upload", handlers.DeleteUpload)
 	})

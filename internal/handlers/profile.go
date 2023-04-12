@@ -54,3 +54,7 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 	panic("unimplemented")
 }
+
+func SendVerification(w http.ResponseWriter, r *http.Request) {
+	panic("unimplemented")
+}
