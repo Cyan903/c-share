@@ -1,8 +1,15 @@
 DSN: username:password@tcp(0.0.0.0:3306)/cshare
 PORT: 8081
 
+# https://www.grc.com/passwords.htm
 MODE: development
 SECRET: hello-world
 
 UPLOAD_LIMIT: 1000000 # bytes
 UPLOAD_PATH: /home/hwk/dev/sand/c-storage
+
+MAIL:
+  USER: "example@mail.com"
+  PASSWORD: "SecretPassword"
+  HOST: "smtp.mail.com"
+  PORT: 587

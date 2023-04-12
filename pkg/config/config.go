@@ -15,6 +15,12 @@ type Conf struct {
 	JWTSecret   string `yaml:"SECRET,omitempty"`
 	UploadLimit int64  `yaml:"UPLOAD_LIMIT,omitempty"`
 	UploadPath  string `yaml:"UPLOAD_PATH,omitempty"`
+	Mail        struct {
+		User     string `yaml:"USER,omitempty"`
+		Password string `yaml:"PASSWORD,omitempty"`
+		Host     string `yaml:"HOST,omitempty"`
+		Port     int    `yaml:"PORT,omitempty"`
+	} `yaml:"MAIL"`
 }
 
 var Data Conf
