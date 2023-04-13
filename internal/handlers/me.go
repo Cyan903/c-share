@@ -59,8 +59,6 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 	json.JSON()
 }
 
-// TODO: Update used_storage
-
 func Upload(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 

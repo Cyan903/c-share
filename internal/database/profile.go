@@ -75,3 +75,17 @@ func VerifyUserEmail(uid string) (error) {
 
 	return nil
 }
+
+func ChangeEmail(uid, naddress string) error {
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	_, err := Conn.ExecContext(c, "UPDATE users SET email = ?, email_verified = 0 WHERE id = ?", naddress, uid)
+
+	defer cancel()
+
+	if err != nil {
+		log.Error.Println("Could not update user's email -", err)
+		return err
+	}
+	
+	return nil
+}

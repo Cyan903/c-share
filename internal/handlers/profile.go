@@ -58,9 +58,51 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Current email must be verified
 func UpdateEmail(w http.ResponseWriter, r *http.Request) {
-	panic("unimplemented")
+	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
+	response := api.SimpleResponse{Writer: w}
+
+	// User has verified address
+	abt, err := database.About(id.Issuer)
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if abt.EmailVerified == 0 {
+		response.Unauthorized("Your email must be verified in order to change it!")
+		return
+	}
+
+	// Email is valid
+	newEmail := r.URL.Query().Get("email")
+
+	if api.InvalidEmail(newEmail) {
+		response.BadRequest("Invalid email!")
+		return
+	}
+
+	// Email in use
+	inUse, err := database.EmailUsed(newEmail)
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if inUse {
+		response.Conflict("Email is in use!")
+		return
+	}
+
+	// Update address
+	if err := database.ChangeEmail(id.Issuer, newEmail); err != nil {
+		response.InternalError()
+		return
+	}
+
+	response.Success("Email has been updated!")
 }
 
 // TODO: User shouldn't be able to spam this
