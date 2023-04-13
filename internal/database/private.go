@@ -165,7 +165,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 
 func UpdateFileInfo(id, user, password, comment string, permission int) (error) {
 	if _, err := GetPrivateFile(id, user); err != nil {
-		log.Info.Println("Could not update file info -", err)
+		log.Error.Println("Could not update file info -", err)
 		return err
 	}
 
@@ -190,7 +190,7 @@ func UpdateFileInfo(id, user, password, comment string, permission int) (error) 
 	defer cancel()
 
 	if err != nil {
-		log.Info.Println("Could not update file info -", err)
+		log.Error.Println("Could not update file info -", err)
 		return err
 	}
 

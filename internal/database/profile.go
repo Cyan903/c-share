@@ -15,7 +15,7 @@ func ChangeNickname(uid, nick string) error {
 	defer cancel()
 
 	if err != nil {
-		log.Info.Println("Could not update user nickname -", err)
+		log.Error.Println("Could not update user nickname -", err)
 		return err
 	}
 
@@ -31,7 +31,7 @@ func ChangePassword(uid, oldpw, newpw string) error {
 	defer cancel()
 
 	if err := query.Scan(&pw); err != nil {
-		log.Info.Println("Could not get user's password -", err)
+		log.Error.Println("Could not get user's password -", err)
 		return err
 	}
 
@@ -55,7 +55,7 @@ func ChangePassword(uid, oldpw, newpw string) error {
 	_, err = Conn.ExecContext(c, "UPDATE users SET pw_bcrypt = ? WHERE id = ?", hashedPw, uid)
 
 	if err != nil {
-		log.Info.Println("Could not update user password -", err)
+		log.Error.Println("Could not update user password -", err)
 		return err
 	}
 
@@ -69,7 +69,7 @@ func VerifyUserEmail(uid string) (error) {
 	defer cancel()
 
 	if err != nil {
-		log.Info.Println("Could not verify user's email -", err)
+		log.Error.Println("Could not verify user's email -", err)
 		return err
 	}
 
