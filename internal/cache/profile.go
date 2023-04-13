@@ -15,7 +15,7 @@ const EMAIL_EXPIRE = 10 * time.Hour
 func SaveVerification(uid, code string) error {
 	if err := Conn.Set(
 		context.Background(),
-		fmt.Sprintf("c:%s", uid),
+		fmt.Sprintf("c:email_verification:%s", uid),
 		code,
 		EMAIL_EXPIRE,
 	).Err(); err != nil {
@@ -27,7 +27,7 @@ func SaveVerification(uid, code string) error {
 }
 
 func GetVerification(uid string) (string, error) {
-	code, err := Conn.Get(context.Background(), fmt.Sprintf("c:%s", uid)).Result()
+	code, err := Conn.Get(context.Background(), fmt.Sprintf("c:email_verification:%s", uid)).Result()
 
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -42,7 +42,7 @@ func GetVerification(uid string) (string, error) {
 }
 
 func DeleteEmailVerification(uid string) error {
-	if err := Conn.Del(context.Background(), fmt.Sprintf("c:%s", uid)).Err(); err != nil {
+	if err := Conn.Del(context.Background(), fmt.Sprintf("c:email_verification:%s", uid)).Err(); err != nil {
 		log.Error.Println("Could not remove email verification from cache -", err)
 		return err
 	}

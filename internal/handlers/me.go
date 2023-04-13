@@ -75,7 +75,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Accept request
 	upriv, priv := r.URL.Query().Get("perm"), 0
-	pass := r.URL.Query().Get("pass")
+	pass := r.URL.Query().Get("password")
 	comment := r.URL.Query().Get("comment")
 
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
