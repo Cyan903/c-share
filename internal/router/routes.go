@@ -25,6 +25,8 @@ func routes() http.Handler {
 		r.Post("/profile/nickname", handlers.UpdateNickname)
 		r.Post("/profile/password", handlers.UpdatePassword)
 		r.Post("/profile/email", handlers.UpdateEmail)
+
+		// TODO: Do not allow if something is already in cache
 		r.Post("/profile/verify", handlers.SendVerification)
 		r.Post("/profile/{id}", handlers.VerifyEmail)
 
@@ -32,9 +34,12 @@ func routes() http.Handler {
 		r.Delete("/upload", handlers.DeleteUpload)
 	})
 
-	// mux.Post("/auth/pwreset", handlers.PasswordReset)
 	mux.Post("/auth/register", handlers.Register)
 	mux.Post("/auth/login", handlers.Login)
+
+	// TODO: Same as verify
+	mux.Post("/auth/pwreset", handlers.SendPasswordReset)
+	mux.Post("/auth/{id}", handlers.ResetPassword)
 
 	// mux.Get("/f", ?) // server stats (dev only)
 	mux.Get("/f/{id}", handlers.GetFile)

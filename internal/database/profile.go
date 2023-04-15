@@ -62,7 +62,7 @@ func ChangePassword(uid, oldpw, newpw string) error {
 	return nil
 }
 
-func VerifyUserEmail(uid string) (error) {
+func VerifyUserEmail(uid string) error {
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	_, err := Conn.ExecContext(c, "UPDATE users SET email_verified = 1 WHERE id = ?", uid)
 
@@ -86,6 +86,27 @@ func ChangeEmail(uid, naddress string) error {
 		log.Error.Println("Could not update user's email -", err)
 		return err
 	}
-	
+
+	return nil
+}
+
+func ResetEmailPassword(email, password string) error {
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	defer cancel()
+
+	if err != nil {
+		log.Error.Println("Could not hash password -", err)
+		return err
+	}
+
+	_, err = Conn.ExecContext(c, "UPDATE users SET pw_bcrypt = ? WHERE email = ?", hashedPw, email)
+
+	if err != nil {
+		log.Error.Println("Could not update user password -", err)
+		return err
+	}
+
 	return nil
 }

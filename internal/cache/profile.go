@@ -4,13 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/Cyan903/c-share/pkg/log"
 	"github.com/redis/go-redis/v9"
 )
-
-const EMAIL_EXPIRE = 10 * time.Hour
 
 func SaveVerification(uid, code string) error {
 	if err := Conn.Set(

@@ -8,6 +8,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+const EMAIL_EXPIRE = 2 * time.Hour
+
 var Conn *redis.Client
 
 func OpenCache(addr, password string, db int) error {

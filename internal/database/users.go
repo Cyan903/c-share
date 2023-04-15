@@ -23,6 +23,12 @@ type Info struct {
 	Register      string `json:"created_at"`
 }
 
+type InfoEmail struct {
+	ID            int    `json:"id"`
+	Email         string `json:"email"`
+	EmailVerified int    `json:"email_verified"`
+}
+
 func EmailUsed(email string) (bool, error) {
 	var inUse bool
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
@@ -111,4 +117,27 @@ func About(uid string) (Info, error) {
 	}
 
 	return abt, nil
+}
+
+func EmailInfo(emailAddress string) (InfoEmail, error) {
+	var imail InfoEmail
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	res := Conn.QueryRowContext(c, "SELECT id, email, email_verified FROM users WHERE email = ?", emailAddress)
+
+	defer cancel()
+
+	if err := res.Scan(
+		&imail.ID,
+		&imail.Email,
+		&imail.EmailVerified,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return imail, ErrNotFound
+		}
+
+		log.Error.Println("Could not fetch email info -", err)
+		return imail, err
+	}
+
+	return imail, nil
 }

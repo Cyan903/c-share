@@ -56,6 +56,8 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		response.InternalError()
 		return
 	}
+
+	response.Success("Password has been reset!")
 }
 
 func UpdateEmail(w http.ResponseWriter, r *http.Request) {

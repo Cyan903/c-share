@@ -3,12 +3,20 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
+	"github.com/Cyan903/c-share/internal/cache"
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/auth"
+	"github.com/Cyan903/c-share/pkg/config"
+	"github.com/Cyan903/c-share/pkg/log"
+	"github.com/Cyan903/c-share/pkg/mail"
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type account struct {
@@ -138,4 +146,102 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	tokenResponse.Count = 1
 
 	tokenResponse.JSON()
+}
+
+// TODO: User should also not be able to spam this either
+func SendPasswordReset(w http.ResponseWriter, r *http.Request) {
+	response := api.SimpleResponse{Writer: w}
+	emailAddress := r.URL.Query().Get("email")
+
+	// User has verified address
+	minfo, err := database.EmailInfo(emailAddress)
+	resetToken := strings.Replace(uuid.New().String(), "-", "", -1)
+
+	if err != nil {
+		if errors.Is(err, database.ErrNotFound) {
+			response.NotFound("Account with email does not exist!")
+			return
+		}
+
+		response.InternalError()
+		return
+	}
+
+	if minfo.EmailVerified == 0 {
+		response.Unauthorized("This email address is not verified. Password reset unavailable.")
+		return
+	}
+
+	// Save and send reset token
+	if err := cache.SaveResetToken(minfo.Email, resetToken); err != nil {
+		response.InternalError()
+		return
+	}
+
+	m := mail.MailClient{
+		To: []string{
+			minfo.Email,
+		},
+
+		From:     config.Data.Mail.User,
+		Password: config.Data.Mail.Password,
+		Host:     config.Data.Mail.Host,
+		Port:     config.Data.Mail.Port,
+	}
+
+	// TODO: Improve this
+	if err := m.SendMail([]byte(fmt.Sprintf(
+		"From: %s\r\n"+
+			"To: %s\r\n"+
+			"Subject: Password Reset\r\n\r\n"+
+			"A password reset has been requested!\n\n%s\r\n",
+
+		config.Data.Mail.User,
+		minfo.Email, resetToken,
+	))); err != nil {
+		log.Error.Println("Could not send email -", err)
+		response.InternalError()
+		return
+	}
+
+	response.Success("Email has been sent!")
+}
+
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	response := api.SimpleResponse{Writer: w}
+
+	// Validate new password
+	password := r.URL.Query().Get("password")
+
+	if api.InvalidPassword(password) {
+		response.BadRequest("Invalid password!")
+		return
+	}
+
+	// Validate reset token
+	email, err := cache.GetResetToken(id)
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if email == "" {
+		response.BadRequest("Invalid token!")
+		return
+	}
+
+	// Update password and remove token
+	if err := database.ResetEmailPassword(email, password); err != nil {
+		response.InternalError()
+		return
+	}
+
+	if err := cache.DeleteResetToken(id); err != nil {
+		response.InternalError()
+		return
+	}
+
+	response.Success("Password has been reset!")
 }
