@@ -163,17 +163,17 @@ func FileInfo(uid, fileID string) (FileData, error) {
 	return file, nil
 }
 
-func UpdateFileInfo(id, user, password, comment string, permission int) (bool, error) {
+func UpdateFileInfo(id, user, password, comment string, permission int) (error) {
 	if _, err := GetPrivateFile(id, user); err != nil {
-		log.Info.Println("Could not update file info -", err)
-		return false, err
+		log.Error.Println("Could not update file info -", err)
+		return err
 	}
 
 	hashedPw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
 		log.Error.Println("Could not hash password!")
-		return false, err
+		return err
 	}
 
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
@@ -190,9 +190,9 @@ func UpdateFileInfo(id, user, password, comment string, permission int) (bool, e
 	defer cancel()
 
 	if err != nil {
-		log.Info.Println("Could not update file info -", err)
-		return false, err
+		log.Error.Println("Could not update file info -", err)
+		return err
 	}
 
-	return true, nil
+	return nil
 }

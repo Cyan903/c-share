@@ -175,7 +175,7 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	success, err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
+	err := database.UpdateFileInfo(file, id.Issuer, password, comment, priv)
 
 	if errors.Is(database.ErrNotFound, err) {
 		response.NotFound("File not found!")
@@ -185,10 +185,5 @@ func EditFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if success {
-		response.Success("File has been updated!")
-		return
-	}
-
-	response.InternalError()
+	response.Success("File has been updated!")
 }

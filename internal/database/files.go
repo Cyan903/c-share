@@ -25,6 +25,17 @@ type File struct {
 	CreatedAt   string `json:"created_at"`
 }
 
+type StorageInfo struct {
+	Users     int    `json:"users"`
+	Storage   string `json:"storage"`
+	FileCount struct {
+		Total    int `json:"total"`
+		Public   int `json:"public"`
+		Private  int `json:"private"`
+		Unlisted int `json:"unlisted"`
+	} `json:"files"`
+}
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -220,4 +231,58 @@ func DeleteFiles(uid string, files []string) error {
 	}
 
 	return nil
+}
+
+// TODO: check if user has enough storage left
+func UpdateStorage(uid string) error {
+	var storage int64
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, "SELECT COALESCE(SUM(file_size), 0) FROM files WHERE user = ?", uid)
+
+	defer cancel()
+
+	if err := query.Scan(&storage); err != nil {
+		log.Error.Println("Error calculating storage -", err)
+		return err
+	}
+
+	if _, err := Conn.ExecContext(c, "UPDATE users SET used_storage = ? WHERE id = ?", storage, uid); err != nil {
+		log.Error.Println("Error updating user's storage value -", err)
+		return err
+	}
+
+	return nil
+}
+
+func ServerStorageInfo() (StorageInfo, error) {
+	var sinfo StorageInfo
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, `
+		SELECT
+			COUNT(1) AS users,
+			SUM(used_storage) AS storage,
+			(SELECT COUNT(1) FROM files) AS total_files,
+			(SELECT COUNT(1) FROM files WHERE permissions = 0) AS pub,
+			(SELECT COUNT(1) FROM files WHERE permissions = 1) AS priv,
+			(SELECT COUNT(1) FROM files WHERE permissions = 2) AS unlist
+		FROM users;
+	`)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&sinfo.Users,
+		&sinfo.Storage,
+		&sinfo.FileCount.Total,
+		&sinfo.FileCount.Public,
+		&sinfo.FileCount.Private,
+		&sinfo.FileCount.Unlisted,
+	); err != nil {
+		log.Error.Println("Error fetching storage info -", err)
+		return sinfo, err
+	}
+
+	return sinfo, nil
 }

@@ -9,8 +9,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const DefaultTimeout = 3 * time.Second
+
 var Conn *sql.DB
-var DefaultTimeout = 3 * time.Second
 var ErrBadPW error = errors.New("invalid password")
 var ErrNotFound error = errors.New("not found")
 

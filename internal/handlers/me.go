@@ -53,12 +53,8 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Code = http.StatusOK
-	json.Count = 3
-	json.Data = map[string]string{
-		"ID":       strconv.Itoa(abt.ID),
-		"Nickname": abt.Nickname,
-		"Register": abt.Register,
-	}
+	json.Count = 5
+	json.Data = abt
 
 	json.JSON()
 }
@@ -77,7 +73,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Accept request
 	upriv, priv := r.URL.Query().Get("perm"), 0
-	pass := r.URL.Query().Get("pass")
+	pass := r.URL.Query().Get("password")
 	comment := r.URL.Query().Get("comment")
 
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
@@ -158,6 +154,12 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Update Storage
+	if err := database.UpdateStorage(id.Issuer); err != nil {
+		response.InternalError()
+		return
+	}
+
 	response.Success(rid)
 }
 
@@ -225,6 +227,12 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 			log.Error.Println("Could not remove file from disk -", err)
 			return
 		}
+	}
+
+	// Update Storage
+	if err := database.UpdateStorage(id.Issuer); err != nil {
+		response.InternalError()
+		return
 	}
 
 	response.Success("Files removed!")
