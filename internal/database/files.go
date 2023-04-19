@@ -25,6 +25,17 @@ type File struct {
 	CreatedAt   string `json:"created_at"`
 }
 
+type StorageInfo struct {
+	Users     int    `json:"users"`
+	Storage   string `json:"storage"`
+	FileCount struct {
+		Total    int `json:"total"`
+		Public   int `json:"public"`
+		Private  int `json:"private"`
+		Unlisted int `json:"unlisted"`
+	} `json:"files"`
+}
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -242,4 +253,36 @@ func UpdateStorage(uid string) error {
 	}
 
 	return nil
+}
+
+func ServerStorageInfo() (StorageInfo, error) {
+	var sinfo StorageInfo
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, `
+		SELECT
+			COUNT(1) AS users,
+			SUM(used_storage) AS storage,
+			(SELECT COUNT(1) FROM files) AS total_files,
+			(SELECT COUNT(1) FROM files WHERE permissions = 0) AS pub,
+			(SELECT COUNT(1) FROM files WHERE permissions = 1) AS priv,
+			(SELECT COUNT(1) FROM files WHERE permissions = 2) AS unlist
+		FROM users;
+	`)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&sinfo.Users,
+		&sinfo.Storage,
+		&sinfo.FileCount.Total,
+		&sinfo.FileCount.Public,
+		&sinfo.FileCount.Private,
+		&sinfo.FileCount.Unlisted,
+	); err != nil {
+		log.Error.Println("Error fetching storage info -", err)
+		return sinfo, err
+	}
+
+	return sinfo, nil
 }

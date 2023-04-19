@@ -8,6 +8,10 @@ SECRET: hello-world
 UPLOAD_LIMIT: 1000000 # bytes
 UPLOAD_PATH: /home/hwk/dev/sand/c-storage
 
+CORS-ALLOW:
+  - https://server-name.ca
+  - https://server-name.ca
+
 CACHE:
   ADDRESS: "localhost:6379"
   PASSWORD: ""

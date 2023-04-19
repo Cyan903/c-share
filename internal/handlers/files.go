@@ -51,3 +51,27 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeFile(w, r, p)
 }
+
+// Dev mode only
+func ServerFiles(w http.ResponseWriter, r *http.Request) {
+	response := api.SimpleResponse{Writer: w}
+	json := api.AdvancedResponse{Writer: w}
+
+	if config.Data.Mode != "development" {
+		response.NotFound("Route not found!")
+		return
+	}
+
+	info, err := database.ServerStorageInfo()
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	json.Code = 200
+	json.Count = 3
+	json.Data = info
+
+	json.JSON()
+}
