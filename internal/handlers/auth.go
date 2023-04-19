@@ -149,11 +149,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func SendPasswordReset(w http.ResponseWriter, r *http.Request) {
+	var usr user
+
+	usrDecoder := json.NewDecoder(r.Body)
 	response := api.SimpleResponse{Writer: w}
-	emailAddress := r.URL.Query().Get("email")
+
+	if err := usrDecoder.Decode(&usr); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
 
 	// User has verified address
-	minfo, err := database.EmailInfo(emailAddress)
+	minfo, err := database.EmailInfo(usr.Email)
 	resetToken := strings.Replace(uuid.New().String(), "-", "", -1)
 
 	if err != nil {
@@ -207,13 +214,18 @@ func SendPasswordReset(w http.ResponseWriter, r *http.Request) {
 }
 
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var usr user
+
 	id := chi.URLParam(r, "id")
 	response := api.SimpleResponse{Writer: w}
+	usrDecoder := json.NewDecoder(r.Body)
 
-	// Validate new password
-	password := r.URL.Query().Get("password")
+	if err := usrDecoder.Decode(&usr); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
 
-	if api.InvalidPassword(password) {
+	if api.InvalidPassword(usr.Password) {
 		response.BadRequest("Invalid password!")
 		return
 	}
@@ -232,7 +244,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update password and remove token
-	if err := database.ResetEmailPassword(email, password); err != nil {
+	if err := database.ResetEmailPassword(email, usr.Password); err != nil {
 		response.InternalError()
 		return
 	}

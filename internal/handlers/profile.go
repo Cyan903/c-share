@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -17,17 +18,31 @@ import (
 	"github.com/google/uuid"
 )
 
+type profileUpdate struct {
+	Nickname    string `json:"nickname"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+	Email       string `json:"email"`
+}
+
 func UpdateNickname(w http.ResponseWriter, r *http.Request) {
+	var prof profileUpdate
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
-	nick := r.URL.Query().Get("nickname")
+	profDecoder := json.NewDecoder(r.Body)
 
-	if api.InvalidNickname(nick) {
+	if err := profDecoder.Decode(&prof); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
+
+	if api.InvalidNickname(prof.Nickname) {
 		response.BadRequest("Invalid nickname!")
 		return
 	}
 
-	if err := database.ChangeNickname(id.Issuer, nick); err != nil {
+	if err := database.ChangeNickname(id.Issuer, prof.Nickname); err != nil {
 		response.InternalError()
 		return
 	}
@@ -36,18 +51,23 @@ func UpdateNickname(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	var prof profileUpdate
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
+	profDecoder := json.NewDecoder(r.Body)
 
-	oldpass := r.URL.Query().Get("password")
-	newpass := r.URL.Query().Get("replacement")
+	if err := profDecoder.Decode(&prof); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
 
-	if api.InvalidPassword(newpass) {
+	if api.InvalidPassword(prof.NewPassword) {
 		response.Unauthorized("Bad new password!")
 		return
 	}
 
-	if err := database.ChangePassword(id.Issuer, oldpass, newpass); err != nil {
+	if err := database.ChangePassword(id.Issuer, prof.OldPassword, prof.NewPassword); err != nil {
 		if errors.Is(database.ErrBadPW, err) {
 			response.Unauthorized("Invalid password!")
 			return
@@ -61,8 +81,16 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateEmail(w http.ResponseWriter, r *http.Request) {
+	var prof profileUpdate
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
+	profDecoder := json.NewDecoder(r.Body)
+
+	if err := profDecoder.Decode(&prof); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
 
 	// User has verified address
 	abt, err := database.About(id.Issuer)
@@ -78,15 +106,13 @@ func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Email is valid
-	newEmail := r.URL.Query().Get("email")
-
-	if api.InvalidEmail(newEmail) {
+	if api.InvalidEmail(prof.Email) {
 		response.BadRequest("Invalid email!")
 		return
 	}
 
 	// Email in use
-	inUse, err := database.EmailUsed(newEmail)
+	inUse, err := database.EmailUsed(prof.Email)
 
 	if err != nil {
 		response.InternalError()
@@ -99,7 +125,7 @@ func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update address
-	if err := database.ChangeEmail(id.Issuer, newEmail); err != nil {
+	if err := database.ChangeEmail(id.Issuer, prof.Email); err != nil {
 		response.InternalError()
 		return
 	}
