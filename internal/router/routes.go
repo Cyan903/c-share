@@ -2,15 +2,22 @@ package router
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/Cyan903/c-share/internal/handlers"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/httprate"
 )
 
 func routes() http.Handler {
 	// TODO: CORS
-	// TODO: Rate limit
 	mux := chi.NewRouter()
+
+	info := httprate.LimitByIP(10, 10*time.Minute)
+	email := httprate.LimitByIP(3, 5*time.Minute)
+	reset := httprate.LimitByIP(5, 5*time.Minute)
+
+	mux.Use(httprate.LimitByIP(300, 1*time.Minute))
 
 	mux.Route("/@me", func(r chi.Router) {
 		r.Use(handlers.TokenCheck)
@@ -21,14 +28,12 @@ func routes() http.Handler {
 		r.Get("/f/{id}/info", handlers.PrivateFileInfo)
 		r.Patch("/f/{id}/edit", handlers.EditFileInfo)
 
-		// TODO: These should be limited
-		r.Post("/profile/nickname", handlers.UpdateNickname)
-		r.Post("/profile/password", handlers.UpdatePassword)
-		r.Post("/profile/email", handlers.UpdateEmail)
+		r.With(info).Post("/profile/nickname", handlers.UpdateNickname)
+		r.With(info).Post("/profile/password", handlers.UpdatePassword)
+		r.With(info).Post("/profile/email", handlers.UpdateEmail)
 
-		// TODO: Do not allow if something is already in cache
-		r.Post("/profile/verify", handlers.SendVerification)
-		r.Post("/profile/{id}", handlers.VerifyEmail)
+		r.With(email).Post("/profile/verify", handlers.SendVerification)
+		r.With(email).Post("/profile/{id}", handlers.VerifyEmail)
 
 		r.Post("/upload", handlers.Upload)
 		r.Delete("/upload", handlers.DeleteUpload)
@@ -37,9 +42,8 @@ func routes() http.Handler {
 	mux.Post("/auth/register", handlers.Register)
 	mux.Post("/auth/login", handlers.Login)
 
-	// TODO: Same as verify
-	mux.Post("/auth/pwreset", handlers.SendPasswordReset)
-	mux.Post("/auth/{id}", handlers.ResetPassword)
+	mux.With(reset).Post("/auth/pwreset", handlers.SendPasswordReset)
+	mux.With(reset).Post("/auth/{id}", handlers.ResetPassword)
 
 	// mux.Get("/f", ?) // server stats (dev only)
 	mux.Get("/f/{id}", handlers.GetFile)

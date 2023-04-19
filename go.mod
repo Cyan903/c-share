@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/go-chi/httprate v0.7.4
 	github.com/google/uuid v1.3.0
 	github.com/redis/go-redis/v9 v9.0.3
 	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb

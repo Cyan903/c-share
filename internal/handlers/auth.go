@@ -148,7 +148,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	tokenResponse.JSON()
 }
 
-// TODO: User should also not be able to spam this either
 func SendPasswordReset(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
 	emailAddress := r.URL.Query().Get("email")

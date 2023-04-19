@@ -107,7 +107,6 @@ func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 	response.Success("Email has been updated!")
 }
 
-// TODO: User shouldn't be able to spam this
 func SendVerification(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
