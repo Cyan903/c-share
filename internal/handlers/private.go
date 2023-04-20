@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,17 +17,28 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-// ? page = 0
-// & listing = [any, public, private, unlisted]
-// & type = [any, text/html]
-// & order = [any, size, type, comment, permission, date]
-// & sort = [asc, desc]
-// & search = ? (optional)
+type fileSearch struct {
+	Listing string `json:"listing"`    // [any, public, private, unlisted]
+	Type    string `json:"file_type"`  // [any, text/html]
+	Order   string `json:"file_order"` // [any, size, type, comment, permission, date]
+	Sort    string `json:"sort"`       // [asc, desc]
+}
+
+// ? page = 0 & search = ? (optional)
 func FilesListing(w http.ResponseWriter, r *http.Request) {
+	var fsearch fileSearch
+
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
-	json := api.AdvancedResponse{Writer: w}
+	jsonResponse := api.AdvancedResponse{Writer: w}
+	fdecoder := json.NewDecoder(r.Body)
 
+	if err := fdecoder.Decode(&fsearch); err != nil {
+		response.BadRequest("Invalid JSON!")
+		return
+	}
+
+	search := r.URL.Query().Get("search")
 	page := r.URL.Query().Get("page")
 	pagn, err := strconv.Atoi(page)
 
@@ -35,55 +47,44 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	perms := []string{"any", "public", "private", "unlisted"}
-	perm := r.URL.Query().Get("listing")
-
-	if !slices.Contains(perms, perm) {
+	// Validate params
+	if !slices.Contains([]string{"any", "public", "private", "unlisted"}, fsearch.Listing) {
 		response.BadRequest("Invalid listing!")
 		return
 	}
 
-	fileType := r.URL.Query().Get("type")
-
-	if fileType == "" {
+	if fsearch.Type == "" {
 		response.BadRequest("Invalid file type!")
 		return
 	}
 
-	orders := []string{"any", "size", "type", "comment", "permission", "date"}
-	order := r.URL.Query().Get("order")
-
-	if !slices.Contains(orders, order) {
+	if !slices.Contains([]string{"any", "size", "type", "comment", "permission", "date"}, fsearch.Order) {
 		response.BadRequest("Invalid order!")
 		return
 	}
 
-	sort := r.URL.Query().Get("sort")
-
-	if sort != "asc" && sort != "desc" {
+	if fsearch.Sort != "asc" && fsearch.Sort != "desc" {
 		response.BadRequest("Invalid sort!")
 		return
 	}
-
-	search := r.URL.Query().Get("search")
 
 	if len(search) > 99 {
 		response.BadRequest("Invalid search!")
 		return
 	}
 
-	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort, search)
+	files, count, err := database.FileListing(id.Issuer, pagn, fsearch.Listing, fsearch.Type, fsearch.Order, fsearch.Sort, search)
 
 	if err != nil {
 		response.InternalError()
 		return
 	}
 
-	json.Code = http.StatusOK
-	json.Data = files
-	json.Count = count
+	jsonResponse.Code = http.StatusOK
+	jsonResponse.Data = files
+	jsonResponse.Count = count
 
-	json.JSON()
+	jsonResponse.JSON()
 }
 
 func GetPrivate(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +118,7 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 	file := chi.URLParam(r, "id")
 
 	response := api.SimpleResponse{Writer: w}
-	json := api.AdvancedResponse{Writer: w}
+	jsonResponse := api.AdvancedResponse{Writer: w}
 
 	info, err := database.FileInfo(id.Issuer, file)
 
@@ -129,11 +130,11 @@ func PrivateFileInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.Code = 200
-	json.Count = 6
-	json.Data = info
+	jsonResponse.Code = 200
+	jsonResponse.Count = 6
+	jsonResponse.Data = info
 
-	json.JSON()
+	jsonResponse.JSON()
 }
 
 func EditFileInfo(w http.ResponseWriter, r *http.Request) {
