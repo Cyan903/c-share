@@ -79,3 +79,10 @@ func (s *SimpleResponse) Success(msg string) {
 
 	s.JSON()
 }
+
+func (s *SimpleResponse) TooManyRequests() {
+	s.Code = http.StatusTooManyRequests
+	s.Message = "Too many requests!"
+	
+	s.JSON()
+}
