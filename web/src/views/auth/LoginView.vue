@@ -12,13 +12,23 @@
                 @click.prevent="login"
             />
         </form>
+
+        <pre>{{ auth.userData }}</pre>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { useRequest } from "@/use/useAPI";
 import { ref, computed } from "vue";
+import { type Login } from "@/types/api/auth";
+
+import { useRequest } from "@/use/useAPI";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
 import Swal from "sweetalert2";
+
+const router = useRouter();
+const auth = useAuthStore();
 
 const email = ref("");
 const password = ref("");
@@ -33,12 +43,17 @@ const invalid = computed(
 );
 
 const login = async () => {
-    const req = await useRequest(
+    const req = await useRequest<Login>(
         "/auth/login",
         {
-            email: email.value,
-            password: password.value,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value,
+            }),
         },
+
         loading
     );
 
@@ -46,17 +61,26 @@ const login = async () => {
     if (req.response.status != 200) {
         Swal.fire({
             title: "Could not login!",
-            text: String(req.json?.message),
+            text: req.json.message,
             icon: "warning",
             confirmButtonText: "Okay",
         });
 
-        email.value = "";
         password.value = "";
         return;
     }
 
-    console.log("Succcess!", req.json);
+    if (await auth.login(req.json.data)) {
+        router.push("/@me");
+        return;
+    }
+
+    Swal.fire({
+        title: "Could not obtain user information.",
+        text: "Please report this bug.",
+        icon: "error",
+        confirmButtonText: "Okay",
+    });
 };
 </script>
 

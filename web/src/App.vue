@@ -1,27 +1,12 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-</script>
-
 <template>
-    <nav>
-        <div>
-            <RouterLink to="/">Home</RouterLink> |
-            <RouterLink to="/about">About</RouterLink>
-        </div>
-
-        <div>
-            <RouterLink to="/auth/login">Login</RouterLink> |
-            <RouterLink to="/auth/register">Register</RouterLink>
-        </div>
-    </nav>
+    <NavbarItem />
 
     <main>
         <RouterView />
     </main>
 </template>
 
-<style scoped>
-nav a.router-link-exact-active {
-    color: red;
-}
-</style>
+<script lang="ts" setup>
+import { RouterView } from "vue-router";
+import NavbarItem from "@/components/NavbarItem.vue";
+</script>
