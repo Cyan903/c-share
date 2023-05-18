@@ -1,24 +1,8 @@
-import type { Error } from "@/types/index";
+import type { Error, SimpleResponse } from "@/types/index";
 
-// TODO: Reduce duplication
-
-export interface Login extends Error {
-    code: number;
-    count: number;
-    data: string;
-}
-
-export interface Register extends Error {
-    code: number;
-    count: number;
-    data: string;
-}
-
-export interface PasswordReset extends Error {
-    code: number;
-    count: number;
-    data: string;
-}
+export interface Login extends SimpleResponse {}
+export interface Register extends SimpleResponse {}
+export interface PasswordReset extends SimpleResponse {}
 
 export interface ResetToken extends Error {
     code: number;

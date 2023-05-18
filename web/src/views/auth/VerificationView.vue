@@ -4,7 +4,7 @@
 
         <h1>New Password</h1>
         <form>
-            <input type="password" v-model="password" placeholder="Password" />
+            <input type="password" v-model="password" placeholder="Password" v-focus />
 
             <input
                 :disabled="!invalid"
@@ -20,6 +20,7 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { vFocus } from "@/directives/vFocus";
 import { useRequest } from "@/use/useAPI";
 import { useValidPassword } from "@/use/useValidate";
 import type { ResetToken } from "@/types/api/auth";

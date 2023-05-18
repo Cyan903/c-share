@@ -65,7 +65,6 @@ export const useAuthStore = defineStore("auth", () => {
         userData.createdAt = "";
 
         token.value = "";
-        localStorage.clear();
         clearInterval(timer);
     };
 

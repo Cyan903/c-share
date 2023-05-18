@@ -9,7 +9,7 @@
         </p>
 
         <form>
-            <input type="text" v-model="email" placeholder="Email" />
+            <input type="text" v-model="email" placeholder="Email" v-focus />
 
             <input
                 :disabled="!invalid"
@@ -22,15 +22,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useRequest } from "@/use/useAPI";
 import { computed, ref } from "vue";
+import { vFocus } from "@/directives/vFocus";
+import { useRequest } from "@/use/useAPI";
 import { useValidEmail } from "@/use/useValidate";
 import type { PasswordReset } from "@/types/api/auth";
 
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
-
-// TODO: v-autofocus
 
 const email = ref("");
 const loading = ref(false);

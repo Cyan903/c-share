@@ -4,7 +4,7 @@
 
         <h1>Register</h1>
         <form class="auth-form">
-            <input type="text" v-model="nick" placeholder="Nickname" />
+            <input type="text" v-model="nick" placeholder="Nickname" v-focus />
             <input type="text" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
             <input
@@ -28,6 +28,7 @@ import {
 
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
+import { vFocus } from "@/directives/vFocus";
 import type { Register } from "@/types/api/auth";
 
 import Loading from "@/components/LoadingItem.vue";

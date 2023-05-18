@@ -4,7 +4,7 @@
 
         <h1>Login</h1>
         <form class="auth-form">
-            <input type="text" v-model="email" placeholder="Email" />
+            <input type="text" v-model="email" placeholder="Email" v-focus />
             <input type="password" v-model="password" placeholder="Password" />
             <input
                 :disabled="!invalid"
@@ -26,6 +26,7 @@ import type { Login } from "@/types/api/auth";
 import { useValidEmail, useValidPassword } from "@/use/useValidate";
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
+import { vFocus } from "@/directives/vFocus";
 import { useRouter } from "vue-router";
 
 import Loading from "@/components/LoadingItem.vue";
