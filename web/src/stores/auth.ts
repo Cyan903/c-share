@@ -1,14 +1,11 @@
 import type { AtMe } from "@/types/api/@me";
 import { useRequest } from "@/use/useAPI";
 import { defineStore } from "pinia";
-import { computed, reactive, ref } from "vue";
-
-// TODO: Expire token
-// TODO: localstorage
-// TODO: Guards
+import { computed, onMounted, reactive, ref, watch } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
     const token = ref("");
+    const isLoggedIn = computed(() => token.value != "");
     const userData = reactive({
         nickname: "",
         email: "",
@@ -17,9 +14,10 @@ export const useAuthStore = defineStore("auth", () => {
         createdAt: "",
     });
 
-    const isLoggedIn = computed(() => token.value != "");
+    let timer = 0;
 
     const login = async (jwt: string) => {
+        const tkexpire = JSON.parse(atob(jwt.split(".")[1]));
         const user = await useRequest<AtMe>(
             "/@me",
             {
@@ -47,6 +45,15 @@ export const useAuthStore = defineStore("auth", () => {
         userData.createdAt = user.json.data.created_at;
         token.value = jwt;
 
+        timer = setInterval(() => {
+            if (Math.floor(Date.now() / 1000) > tkexpire.exp) {
+                clearInterval(timer);
+                logout();
+
+                location.href = "/auth/login";
+            }
+        }, 60000);
+
         return true;
     };
 
@@ -56,8 +63,21 @@ export const useAuthStore = defineStore("auth", () => {
         userData.emailVerified = false;
         userData.usedStorage = 0;
         userData.createdAt = "";
+
         token.value = "";
+        localStorage.clear();
+        clearInterval(timer);
     };
+
+    watch(token, () => localStorage.setItem("token", token.value));
+    onMounted(() => {
+        const storage = localStorage.getItem("token");
+
+        if (storage) {
+            console.info("[auth] token found, loading from storage");
+            login(storage);
+        }
+    });
 
     return {
         token,

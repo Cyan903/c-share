@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/stores/auth";
 
 import Home from "@/router/routes/home";
 import Auth from "@/router/routes/auth";
@@ -23,15 +22,15 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-    const auth = useAuthStore();
+    const storage = localStorage.getItem("token");
 
     // Cannot be logged in
-    if (to.meta.requiresNoAuth && auth.isLoggedIn) {
+    if (to.meta.requiresNoAuth && storage) {
         return { path: "/@me" };
     }
 
     // Should be logged in
-    if (to.meta.requiresAuth && !auth.isLoggedIn) {
+    if (to.meta.requiresAuth && !storage) {
         return { path: "/auth/login" };
     }
 });

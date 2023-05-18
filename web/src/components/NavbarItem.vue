@@ -25,8 +25,6 @@ import Swal from "sweetalert2";
 const router = useRouter();
 const auth = useAuthStore();
 
-// TODO: Ensure this works with localstorage
-
 const logout = () => {
     Swal.fire({
         title: "Are you sure you want to logout?",
