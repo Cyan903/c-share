@@ -2,8 +2,9 @@ import MeView from "@/views/@me/MeView.vue";
 
 export default [
     {
-        path: "/@me",
+        path: "",
         name: "@me",
         component: MeView,
+        meta: { requiresAuth: true },
     },
 ];
