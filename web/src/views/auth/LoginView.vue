@@ -3,7 +3,7 @@
         <Loading :loading="loading" />
 
         <h1>Login</h1>
-        <form>
+        <form class="auth-form">
             <input type="text" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
             <input
@@ -83,9 +83,3 @@ const login = async () => {
     });
 };
 </script>
-
-<style scoped>
-form input {
-    display: block;
-}
-</style>

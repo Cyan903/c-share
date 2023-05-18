@@ -57,7 +57,7 @@ export const useAuthStore = defineStore("auth", () => {
         userData.usedStorage = 0;
         userData.createdAt = "";
         token.value = "";
-    }
+    };
 
     return {
         token,
