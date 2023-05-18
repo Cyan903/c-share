@@ -20,15 +20,24 @@
 <script lang="ts" setup>
 import { useAuthStore } from "@/stores/auth";
 import { RouterLink, useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 const auth = useAuthStore();
 
+// TODO: Ensure this works with localstorage
+
 const logout = () => {
-    if (confirm("Are you sure you would like to logout?")) {
-        auth.logout();
-        router.push("/");
-    }
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        showCancelButton: true,
+        confirmButtonText: "Logout",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            auth.logout();
+            router.push("/");
+        }
+    });
 };
 </script>
 

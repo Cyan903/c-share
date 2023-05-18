@@ -1,7 +1,6 @@
 import type { Ref } from "vue";
 import Swal from "sweetalert2";
 
-
 // prettier-ignore
 export async function useRequest<Type>(url: string, options: RequestInit, elm: Ref<Boolean>, noAlert: boolean = false) {
     let error = false;

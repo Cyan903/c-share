@@ -1,7 +1,8 @@
 <template>
     <div>
+        <Loading :loading="loading" />
+
         <h1>Login</h1>
-        <div v-show="loading" class="loading">Loading...</div>
         <form>
             <input type="text" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
@@ -13,18 +14,21 @@
             />
         </form>
 
+        <router-link to="/auth/pwreset">Forgot Password?</router-link>
         <pre>{{ auth.userData }}</pre>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import { type Login } from "@/types/api/auth";
+import type { Login } from "@/types/api/auth";
 
+import { useValidEmail, useValidPassword } from "@/use/useValidate";
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
+import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const router = useRouter();
@@ -35,11 +39,7 @@ const password = ref("");
 const loading = ref(false);
 
 const invalid = computed(
-    () =>
-        email.value.length > 6 &&
-        email.value.length < 30 &&
-        password.value.length > 6 &&
-        password.value.length < 30
+    () => useValidEmail(email) && useValidPassword(password)
 );
 
 const login = async () => {
