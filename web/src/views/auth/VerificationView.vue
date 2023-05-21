@@ -4,7 +4,12 @@
 
         <h1>New Password</h1>
         <form>
-            <input type="password" v-model="password" placeholder="Password" v-focus />
+            <input
+                type="password"
+                v-model="password"
+                placeholder="Password"
+                v-focus
+            />
 
             <input
                 :disabled="!valid"
