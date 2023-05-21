@@ -7,7 +7,7 @@
 
         <div v-if="auth.isLoggedIn">
             <router-link to="/@me">Dashboard</router-link> |
-            <router-link to="/@me/settings">Settings</router-link> |
+            <router-link to="/@me/profile">Profile</router-link> |
             <a href="#" @click.prevent="logout">Logout</a>
         </div>
         <div v-else>

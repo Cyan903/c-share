@@ -1,7 +1,7 @@
-import type { AtMe } from "@/types/api/@me";
-import { useRequest } from "@/use/useAPI";
-import { defineStore } from "pinia";
 import { computed, onMounted, reactive, ref, watch } from "vue";
+import { defineStore } from "pinia";
+import { useRequest } from "@/use/useAPI";
+import type { AtMe } from "@/types/api/@me";
 
 export const useAuthStore = defineStore("auth", () => {
     const token = ref("");

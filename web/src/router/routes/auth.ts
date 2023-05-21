@@ -10,18 +10,21 @@ export default [
         component: LoginView,
         meta: { requiresNoAuth: true },
     },
+
     {
         path: "register",
         name: "register",
         component: RegisterView,
         meta: { requiresNoAuth: true },
     },
+
     {
         path: "pwreset",
         name: "pwreset",
         component: ResetView,
         meta: { requiresNoAuth: true },
     },
+
     {
         path: ":id",
         name: "verification",

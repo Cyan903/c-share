@@ -1,4 +1,4 @@
-import { type Error } from "@/types/index";
+import type { Error } from "@/types/index";
 
 export interface AtMe extends Error {
     code: number;

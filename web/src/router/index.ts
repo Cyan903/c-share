@@ -21,6 +21,8 @@ const router = createRouter({
     ],
 });
 
+// TODO: Update document title
+
 router.beforeEach((to) => {
     const storage = localStorage.getItem("token");
 

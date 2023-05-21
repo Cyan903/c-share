@@ -35,6 +35,8 @@ import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 // TODO: Should probably indicate why a username/password is invalid.
+// TODO: Confirm password
+// TODO: Cleanup invalid
 
 const router = useRouter();
 const auth = useAuthStore();
