@@ -8,6 +8,11 @@
             <input type="text" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
             <input
+                type="password"
+                v-model="passwordConfirm"
+                placeholder="Confirm Password"
+            />
+            <input
                 :disabled="!valid"
                 type="submit"
                 value="Submit"
@@ -35,7 +40,6 @@ import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 // TODO: Should probably indicate why a username/password is invalid.
-// TODO: Confirm password
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -43,13 +47,16 @@ const auth = useAuthStore();
 const nick = ref("");
 const email = ref("");
 const password = ref("");
+const passwordConfirm = ref("");
 
 const loading = ref(false);
 const valid = computed(
     () =>
         useValidNickname(nick) &&
         useValidEmail(email) &&
-        useValidPassword(password)
+        useValidPassword(password) &&
+        useValidPassword(passwordConfirm) &&
+        passwordConfirm.value == password.value
 );
 
 const register = async () => {

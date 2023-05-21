@@ -27,6 +27,13 @@
             />
 
             <input
+                type="password"
+                v-model="pw.confirm"
+                :disabled="!auth.userData.emailVerified"
+                placeholder="Confirm Password"
+            />
+
+            <input
                 type="submit"
                 value="Update"
                 :disabled="!valid"
@@ -54,12 +61,15 @@ const auth = useAuthStore();
 const pw = reactive({
     old: "",
     new: "",
+    confirm: "",
 });
 
 const valid = computed(
     () =>
         useValidPassword(toRef(pw.new)) &&
         useValidPassword(toRef(pw.old)) &&
+        useValidPassword(toRef(pw.confirm)) &&
+        pw.confirm == pw.new &&
         auth.userData.emailVerified
 );
 
