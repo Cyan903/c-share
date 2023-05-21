@@ -7,7 +7,7 @@
             <input type="password" v-model="password" placeholder="Password" v-focus />
 
             <input
-                :disabled="!invalid"
+                :disabled="!valid"
                 type="submit"
                 value="Submit"
                 @click.prevent="updatePassword"
@@ -32,7 +32,7 @@ const password = ref("");
 const loading = ref(false);
 
 const [route, router] = [useRoute(), useRouter()];
-const invalid = computed(() => useValidPassword(password));
+const valid = computed(() => useValidPassword(password));
 
 const updatePassword = async () => {
     const req = await useRequest<ResetToken>(

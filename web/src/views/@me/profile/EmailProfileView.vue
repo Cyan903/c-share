@@ -14,7 +14,7 @@
             />
 
             <input
-                :disabled="!invalid"
+                :disabled="!valid"
                 type="submit"
                 value="Update Email"
                 @click.prevent="updateEmail"
@@ -63,7 +63,7 @@ const auth = useAuthStore();
 const loading = ref(false);
 const email = ref("");
 
-const invalid = computed(
+const valid = computed(
     () => useValidEmail(email) && auth.userData.emailVerified
 );
 

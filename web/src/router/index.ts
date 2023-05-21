@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import NotFoundView from "@/views/NotFoundView.vue";
 
 import Home from "@/router/routes/home";
 import Auth from "@/router/routes/auth";
@@ -18,13 +19,20 @@ const router = createRouter({
             path: "/@me",
             children: [...Me],
         },
+
+        {
+            path: "/:pathMatch(.*)*",
+            name: "not-found",
+            component: NotFoundView,
+            meta: { title: "Not Found" }
+        },
     ],
 });
 
-// TODO: Update document title
-
 router.beforeEach((to) => {
     const storage = localStorage.getItem("token");
+
+    document.title = `${to.meta.title} | ${import.meta.env.VITE_APP}`;
 
     // Cannot be logged in
     if (to.meta.requiresNoAuth && storage) {

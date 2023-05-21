@@ -6,20 +6,21 @@ export default [
         path: "",
         name: "@me",
         component: MeView,
-        meta: { requiresAuth: true },
+        meta: { title: "Dashboard", requiresAuth: true },
     },
 
     {
         path: "profile",
         name: "profile",
         component: ProfileView,
-        meta: { requiresAuth: true },
+        meta: { title: "Profile", requiresAuth: true },
         children: [
             {
                 path: "email",
                 name: "prof-email",
                 component: () =>
                     import("@/views/@me/profile/EmailProfileView.vue"),
+                meta: { title: "Profile Email" },
             },
 
             {
@@ -27,6 +28,7 @@ export default [
                 name: "prof-nickname",
                 component: () =>
                     import("@/views/@me/profile/NickProfileView.vue"),
+                meta: { title: "Profile Nickname" },
             },
 
             {
@@ -34,6 +36,7 @@ export default [
                 name: "prof-password",
                 component: () =>
                     import("@/views/@me/profile/PasswordProfileView.vue"),
+                meta: { title: "Profile Password" },
             },
 
             {
@@ -41,6 +44,7 @@ export default [
                 name: "prof-verify",
                 component: () =>
                     import("@/views/@me/profile/VerificationProfileView.vue"),
+                meta: { title: "Profile Verify" },
             },
         ],
     },

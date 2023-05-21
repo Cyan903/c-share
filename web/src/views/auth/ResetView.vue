@@ -12,7 +12,7 @@
             <input type="text" v-model="email" placeholder="Email" v-focus />
 
             <input
-                :disabled="!invalid"
+                :disabled="!valid"
                 type="submit"
                 value="Submit"
                 @click.prevent="sendVerification"
@@ -33,7 +33,7 @@ import Swal from "sweetalert2";
 
 const email = ref("");
 const loading = ref(false);
-const invalid = computed(() => useValidEmail(email));
+const valid = computed(() => useValidEmail(email));
 
 const sendVerification = async () => {
     const req = await useRequest<PasswordReset>(

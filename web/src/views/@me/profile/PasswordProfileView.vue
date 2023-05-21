@@ -16,6 +16,7 @@
                 v-model="pw.old"
                 :disabled="!auth.userData.emailVerified"
                 placeholder="Old Password"
+                v-focus
             />
 
             <input
@@ -28,7 +29,7 @@
             <input
                 type="submit"
                 value="Update"
-                :disabled="!invalid"
+                :disabled="!valid"
                 @click.prevent="updatePassword"
             />
         </form>
@@ -37,6 +38,8 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref, toRef } from "vue";
+
+import { vFocus } from "@/directives/vFocus";
 import { useValidPassword } from "@/use/useValidate";
 import { useAuthStore } from "@/stores/auth";
 import { useRequest } from "@/use/useAPI";
@@ -53,7 +56,7 @@ const pw = reactive({
     new: "",
 });
 
-const invalid = computed(
+const valid = computed(
     () =>
         useValidPassword(toRef(pw.new)) &&
         useValidPassword(toRef(pw.old)) &&

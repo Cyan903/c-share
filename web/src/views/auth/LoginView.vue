@@ -7,7 +7,7 @@
             <input type="text" v-model="email" placeholder="Email" v-focus />
             <input type="password" v-model="password" placeholder="Password" />
             <input
-                :disabled="!invalid"
+                :disabled="!valid"
                 type="submit"
                 value="Submit"
                 @click.prevent="login"
@@ -39,7 +39,7 @@ const email = ref("");
 const password = ref("");
 const loading = ref(false);
 
-const invalid = computed(
+const valid = computed(
     () => useValidEmail(email) && useValidPassword(password)
 );
 

@@ -8,27 +8,27 @@ export default [
         path: "login",
         name: "login",
         component: LoginView,
-        meta: { requiresNoAuth: true },
+        meta: { title: "Login", requiresNoAuth: true },
     },
 
     {
         path: "register",
         name: "register",
         component: RegisterView,
-        meta: { requiresNoAuth: true },
+        meta: { title: "Register", requiresNoAuth: true },
     },
 
     {
         path: "pwreset",
         name: "pwreset",
         component: ResetView,
-        meta: { requiresNoAuth: true },
+        meta: { title: "Password Reset", requiresNoAuth: true },
     },
 
     {
         path: ":id",
         name: "verification",
         component: VerificationView,
-        meta: { requiresNoAuth: true },
+        meta: { title: "Password Verification", requiresNoAuth: true },
     },
 ];

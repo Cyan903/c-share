@@ -8,7 +8,7 @@
             <input type="text" v-model="email" placeholder="Email" />
             <input type="password" v-model="password" placeholder="Password" />
             <input
-                :disabled="!invalid"
+                :disabled="!valid"
                 type="submit"
                 value="Submit"
                 @click.prevent="register"
@@ -36,7 +36,6 @@ import Swal from "sweetalert2";
 
 // TODO: Should probably indicate why a username/password is invalid.
 // TODO: Confirm password
-// TODO: Cleanup invalid
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -46,7 +45,7 @@ const email = ref("");
 const password = ref("");
 
 const loading = ref(false);
-const invalid = computed(
+const valid = computed(
     () =>
         useValidNickname(nick) &&
         useValidEmail(email) &&

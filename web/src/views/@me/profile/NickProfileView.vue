@@ -6,11 +6,11 @@
         <h4>Hello {{ auth.userData.nickname }}</h4>
 
         <form>
-            <input type="text" v-model="nick" placeholder="Nickname" />
+            <input type="text" v-model="nick" placeholder="Nickname" v-focus />
             <input
                 type="submit"
                 value="Update Nickname"
-                :disabled="!invalid"
+                :disabled="!valid"
                 @click.prevent="updateNickname"
             />
         </form>
@@ -20,6 +20,7 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 
+import { vFocus } from "@/directives/vFocus";
 import { useAuthStore } from "@/stores/auth";
 import { useRequest } from "@/use/useAPI";
 import { useValidNickname } from "@/use/useValidate";
@@ -31,7 +32,7 @@ const auth = useAuthStore();
 const loading = ref(false);
 const nick = ref("");
 
-const invalid = computed(() => useValidNickname(nick));
+const valid = computed(() => useValidNickname(nick));
 
 const updateNickname = async () => {
     const req = await useRequest<NicknameUpdate>(
