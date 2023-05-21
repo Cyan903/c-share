@@ -17,7 +17,7 @@ func routes() http.Handler {
 	info := httprate.Limit(10, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
 	auth := httprate.Limit(15, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
 	email := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
-	reset := httprate.Limit(5, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
+	reset := httprate.Limit(10, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
 
 	mux.Use(httprate.Limit(250, 1*time.Minute, httprate.WithLimitHandler(RateLimit)))
 	mux.Use(cors.Handler(cors.Options{
