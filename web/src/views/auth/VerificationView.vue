@@ -4,11 +4,10 @@
 
         <h1>New Password</h1>
         <form>
-            <input
-                type="password"
-                v-model="password"
-                placeholder="Password"
-                v-focus
+            <ValidPasswordItem v-model="password" />
+            <ValidPasswordConfirmItem
+                v-model="passwordConfirm"
+                :check="password"
             />
 
             <input
@@ -25,19 +24,22 @@
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { vFocus } from "@/directives/vFocus";
 import { useRequest } from "@/use/useAPI";
 import { useValidPassword } from "@/use/useValidate";
 import type { ResetToken } from "@/types/api/auth";
+
+import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
+import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
 
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const password = ref("");
+const passwordConfirm = ref("");
 const loading = ref(false);
 
 const [route, router] = [useRoute(), useRouter()];
-const valid = computed(() => useValidPassword(password));
+const valid = computed(() => useValidPassword(password) && password.value == passwordConfirm.value);
 
 const updatePassword = async () => {
     const req = await useRequest<ResetToken>(

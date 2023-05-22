@@ -3,15 +3,15 @@
         <Loading :loading="loading" />
 
         <h1>Register</h1>
-        <form class="auth-form">
-            <input type="text" v-model="nick" placeholder="Nickname" v-focus />
-            <input type="text" v-model="email" placeholder="Email" />
-            <input type="password" v-model="password" placeholder="Password" />
-            <input
-                type="password"
+        <form>
+            <ValidNicknameItem v-model="nick" />
+            <ValidEmailItem v-model="email" />
+            <ValidPasswordItem v-model="password" />
+            <ValidPasswordConfirmItem
                 v-model="passwordConfirm"
-                placeholder="Confirm Password"
+                :check="password"
             />
+
             <input
                 :disabled="!valid"
                 type="submit"
@@ -31,15 +31,17 @@ import {
     useValidNickname,
 } from "@/use/useValidate";
 
+import ValidNicknameItem from "@/components/valid/ValidNicknameItem.vue";
+import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
+import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
+import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
-import { vFocus } from "@/directives/vFocus";
 import type { Register } from "@/types/api/auth";
 
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
-
-// TODO: Should probably indicate why a username/password is invalid.
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -55,7 +57,6 @@ const valid = computed(
         useValidNickname(nick) &&
         useValidEmail(email) &&
         useValidPassword(password) &&
-        useValidPassword(passwordConfirm) &&
         passwordConfirm.value == password.value
 );
 

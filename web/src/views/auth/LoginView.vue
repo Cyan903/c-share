@@ -3,9 +3,10 @@
         <Loading :loading="loading" />
 
         <h1>Login</h1>
-        <form class="auth-form">
-            <input type="text" v-model="email" placeholder="Email" v-focus />
-            <input type="password" v-model="password" placeholder="Password" />
+        <form>
+            <ValidEmailItem v-model="email" />
+            <ValidPasswordItem v-model="password" />
+
             <input
                 :disabled="!valid"
                 type="submit"
@@ -26,8 +27,10 @@ import type { Login } from "@/types/api/auth";
 import { useValidEmail, useValidPassword } from "@/use/useValidate";
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
-import { vFocus } from "@/directives/vFocus";
 import { useRouter } from "vue-router";
+
+import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
+import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";

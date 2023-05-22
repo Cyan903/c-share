@@ -5,12 +5,9 @@
 
         <h1>Email</h1>
         <form>
-            <input
-                type="text"
+            <ValidEmailItem
                 v-model="email"
-                placeholder="Email"
                 :disabled="!auth.userData.emailVerified"
-                v-focus
             />
 
             <input
@@ -49,7 +46,6 @@
 <script lang="ts" setup>
 import { computed, ref, onMounted } from "vue";
 
-import { vFocus } from "@/directives/vFocus";
 import { useValidEmail } from "@/use/useValidate";
 import { useAuthStore } from "@/stores/auth";
 import { useRequest } from "@/use/useAPI";
@@ -58,6 +54,7 @@ import type { EmailUpdate, EmailSendVerify } from "@/types/api/@me/profile";
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
+import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
 
 const auth = useAuthStore();
 const loading = ref(false);

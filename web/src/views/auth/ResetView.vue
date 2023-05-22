@@ -9,7 +9,7 @@
         </p>
 
         <form>
-            <input type="text" v-model="email" placeholder="Email" v-focus />
+            <ValidEmailItem v-model="email" />
 
             <input
                 :disabled="!valid"
@@ -23,11 +23,11 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { vFocus } from "@/directives/vFocus";
 import { useRequest } from "@/use/useAPI";
 import { useValidEmail } from "@/use/useValidate";
 import type { PasswordReset } from "@/types/api/auth";
 
+import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 

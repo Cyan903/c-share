@@ -6,7 +6,8 @@
         <h4>Hello {{ auth.userData.nickname }}</h4>
 
         <form>
-            <input type="text" v-model="nick" placeholder="Nickname" v-focus />
+            <ValidNicknameItem v-model="nick" />
+
             <input
                 type="submit"
                 value="Update Nickname"
@@ -18,20 +19,19 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
-import { vFocus } from "@/directives/vFocus";
 import { useAuthStore } from "@/stores/auth";
 import { useRequest } from "@/use/useAPI";
 import { useValidNickname } from "@/use/useValidate";
 import type { NicknameUpdate } from "@/types/api/@me/profile";
 
+import ValidNicknameItem from "@/components/valid/ValidNicknameItem.vue";
 import Swal from "sweetalert2";
 
 const auth = useAuthStore();
 const loading = ref(false);
 const nick = ref("");
-
 const valid = computed(() => useValidNickname(nick));
 
 const updateNickname = async () => {
@@ -70,4 +70,8 @@ const updateNickname = async () => {
     auth.userData.nickname = nick.value;
     nick.value = "";
 };
+
+onMounted(() => {
+    nick.value = auth.userData.nickname;
+});
 </script>

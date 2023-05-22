@@ -4,6 +4,6 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.auth-form input {
-    display: block;
+.invalid {
+    color: red;
 }

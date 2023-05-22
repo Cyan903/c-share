@@ -18,3 +18,9 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+ul a.router-link-exact-active {
+    color: green;
+}
+</style>

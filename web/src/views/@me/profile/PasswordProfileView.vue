@@ -10,27 +10,23 @@
             <router-link to="/@me/profile/email">here</router-link>.
         </p>
 
-        <form class="auth-form">
-            <input
-                type="password"
+        <form>
+            <ValidPasswordItem
                 v-model="pw.old"
                 :disabled="!auth.userData.emailVerified"
-                placeholder="Old Password"
-                v-focus
+                placehold="Old Password"
             />
 
-            <input
-                type="password"
+            <ValidPasswordItem
                 v-model="pw.new"
                 :disabled="!auth.userData.emailVerified"
-                placeholder="New Password"
+                placehold="New Password"
             />
 
-            <input
-                type="password"
+            <ValidPasswordConfirmItem
                 v-model="pw.confirm"
+                :check="pw.new"
                 :disabled="!auth.userData.emailVerified"
-                placeholder="Confirm Password"
             />
 
             <input
@@ -46,13 +42,15 @@
 <script lang="ts" setup>
 import { computed, reactive, ref, toRef } from "vue";
 
-import { vFocus } from "@/directives/vFocus";
 import { useValidPassword } from "@/use/useValidate";
 import { useAuthStore } from "@/stores/auth";
 import { useRequest } from "@/use/useAPI";
 import type { PasswordUpdate } from "@/types/api/@me/profile";
 
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
+import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
+import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
@@ -68,7 +66,6 @@ const valid = computed(
     () =>
         useValidPassword(toRef(pw.new)) &&
         useValidPassword(toRef(pw.old)) &&
-        useValidPassword(toRef(pw.confirm)) &&
         pw.confirm == pw.new &&
         auth.userData.emailVerified
 );
