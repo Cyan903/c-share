@@ -16,7 +16,6 @@
         </form>
 
         <router-link to="/auth/pwreset">Forgot Password?</router-link>
-        <pre>{{ auth.userData }}</pre>
     </div>
 </template>
 
