@@ -17,3 +17,7 @@ export function useValidEmail(email: Ref<string>) {
 export function useValidPassword(password: Ref<string>) {
     return password.value.length > 6 && password.value.length < 30;
 }
+
+export function useValidComment(comment: Ref<string>) {
+    return comment.value.length > 0 && comment.value.length < 100;
+}

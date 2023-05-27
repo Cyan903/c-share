@@ -75,7 +75,7 @@
                     <th></th>
                     <th></th>
                 </tr>
-                <BarListItem v-for="d in data" :key="d.id" :data="d" />
+                <BarListItem v-for="d in data" :key="d.id" :data="d" @editFile="updateFile" />
             </table>
 
             <h1 v-else>Nothing found...</h1>
@@ -88,14 +88,14 @@ import { reactive, ref, watch, onMounted, computed } from "vue";
 
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
-import type { FileListing, FileListingData } from "@/types/api/@me/f";
+import type { FileUpdate, FileListing, FileListingData } from "@/types/api/@me/f";
 
 import SortButtonItem from "@/components/@me/SortButtonItem.vue";
 import PageScrollItem from "@/components/@me/PageScrollItem.vue";
 import DisplayOrderItem from "@/components/@me/DisplayOrderItem.vue";
 import BarListItem from "@/components/@me/list/BarListItem.vue";
 
-import ModalItem from "@/components/@me/ModalItem.vue";
+import ModalItem from "@/components/@me/util/ModalItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 
 import Swal from "sweetalert2";
@@ -192,6 +192,10 @@ const usedStorage = computed(() => {
 
     return n.toFixed(n < 10 && l > 0 ? 1 : 0) + " " + units[l];
 });
+
+const updateFile = (file: FileUpdate) => {
+    console.log(file);
+}
 
 watch(query, filterFiles);
 onMounted(filterFiles);
