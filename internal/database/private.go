@@ -35,7 +35,6 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 	}
 
 	orders := map[string]string{
-		"any":        "user",
 		"size":       "file_size",
 		"type":       "file_type",
 		"comment":    "file_comment",

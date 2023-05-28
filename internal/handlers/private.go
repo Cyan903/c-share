@@ -50,7 +50,7 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orders := []string{"any", "size", "type", "comment", "permission", "date"}
+	orders := []string{"size", "type", "comment", "permission", "date"}
 	order := r.URL.Query().Get("order")
 
 	if !slices.Contains(orders, order) {
