@@ -1,8 +1,6 @@
 import type { Error } from "@/types";
 
 export interface FileEditUpdate extends Error {}
-export interface FileUploadRequest extends Error {}
-
 export interface FileUpdate {
     id: string,
     comment: string;

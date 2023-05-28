@@ -5,10 +5,18 @@
             <button @click="modals.filter = true">Filter</button>
         </div>
 
-
         <div>
             <button @click="modals.add = true">Add</button>
-            <button>Remove</button>
+            <button @click="deleteMode = !deleteMode">
+                {{ deleteMode ? "Cancel" : "Remove" }}
+            </button>
+            <button
+                v-if="deleteMode"
+                @click="purgeFiles"
+                :disabled="deleteList.length <= 0"
+            >
+                Delete
+            </button>
         </div>
 
         <ModalItem :show="modals.filter" @hide="modals.filter = false">
@@ -89,6 +97,8 @@
                     v-for="d in data"
                     :key="d.id"
                     :data="d"
+                    :deleteMode="deleteMode"
+                    @updatePurgeList="updateDeleteList"
                     @editFile="updateFile"
                 />
             </table>
@@ -102,12 +112,12 @@ import { reactive, ref, watch, onMounted, computed } from "vue";
 
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
+import type { FileUploadRequest, FileDeleteRequest } from "@/types/api/@me";
 import type {
     FileUpload,
     FileUpdate,
     FileListing,
     FileListingData,
-    FileUploadRequest,
 } from "@/types/api/@me/f";
 
 import UploadFileItem from "@/components/@me/UploadFileItem.vue";
@@ -126,6 +136,12 @@ import Swal from "sweetalert2";
 const auth = useAuthStore();
 const data = ref(Array<FileListingData>(0));
 const total = ref(0);
+const deleteList = ref(Array<string>(0));
+
+const loading = ref(false);
+const nothingFound = ref(false);
+const deleteMode = ref(false);
+
 const query = reactive({
     page: String(0),
     listing: "any",
@@ -135,8 +151,6 @@ const query = reactive({
     search: "",
 });
 
-const loading = ref(false);
-const nothingFound = ref(false);
 const modals = reactive({
     filter: false,
     add: false,
@@ -276,6 +290,58 @@ const uploadFile = async (file: FileUpload) => {
     modals.add = false;
 };
 
+const updateDeleteList = (id: string, del: boolean) => {
+    if (del) {
+        deleteList.value = deleteList.value.filter((n) => n != id);
+        return;
+    }
+
+    deleteList.value.push(id);
+};
+
+const purgeFiles = () => {
+    Swal.fire({
+        title: "Are you sure you want to delete these files?",
+        text: `${deleteList.value.length} file(s) selected`,
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+    }).then(async (result) => {
+        const token = localStorage.getItem("token");
+
+        if (!token) return;
+        if (!result.isConfirmed) return;
+
+        const req = await useRequest<FileDeleteRequest>(
+            `/@me/upload`,
+            {
+                method: "DELETE",
+                headers: { Token: token },
+                body: JSON.stringify(deleteList.value),
+            },
+
+            loading
+        );
+
+        deleteMode.value = false;
+        deleteList.value.length = 0;
+
+        if (req.error) return;
+        if (req.response.status != 200) {
+            Swal.fire({
+                title: "Could not delete files!",
+                text: req.json.message,
+                icon: "warning",
+                confirmButtonText: "Okay",
+            });
+
+            return;
+        }
+
+        filterFiles();
+    });
+};
+
 watch(query, filterFiles);
+watch(deleteMode, () => (deleteList.value.length = 0));
 onMounted(filterFiles);
 </script>

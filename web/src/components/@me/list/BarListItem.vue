@@ -45,11 +45,16 @@
         <td :title="data.created_at">{{ date }}</td>
 
         <td>
-            <input type="checkbox" />
+            <input
+                v-if="deleteMode"
+                ref="deleteCheckbox"
+                type="checkbox"
+                @click="updateSelect"
+            />
         </td>
 
         <td>
-            <button @click="modal = true">Edit</button>
+            <button :disabled="deleteMode" @click="modal = true">Edit</button>
         </td>
     </tr>
 </template>
@@ -77,8 +82,11 @@ import Swal from "sweetalert2";
 // TODO: File preview
 
 const coverImage = ref("");
+const deleteCheckbox = ref<HTMLInputElement>();
 const modal = ref(false);
 const loading = ref(false);
+const selected = ref(false);
+
 const edit = reactive({
     password: "",
     comment: "",
@@ -87,10 +95,12 @@ const edit = reactive({
 
 const props = defineProps<{
     data: FileListingData;
+    deleteMode: boolean;
 }>();
 
 const emit = defineEmits<{
     (e: "editFile", evt: FileUpdate): void;
+    (e: "updatePurgeList", id: string, del: boolean): void;
 }>();
 
 const valid = computed(() => {
@@ -163,6 +173,13 @@ const updateFile = async () => {
     });
 };
 
+const updateSelect = () => {
+    if (!deleteCheckbox.value) return;
+
+    selected.value = deleteCheckbox.value.checked;
+    emit("updatePurgeList", props.data.id, !selected.value);
+};
+
 onMounted(async () => {
     const token = localStorage.getItem("token");
     const files = [
@@ -206,6 +223,13 @@ watch(modal, () => {
     edit.comment = props.data.file_comment;
     edit.perm = ["public", "private", "unlisted"][props.data.permissions];
 });
+
+watch(
+    () => props.deleteMode,
+    () => {
+        selected.value = false;
+    }
+);
 </script>
 
 <style scoped>
