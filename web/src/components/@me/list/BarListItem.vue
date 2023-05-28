@@ -38,12 +38,14 @@
         </td>
 
         <td>{{ data.file_type }}</td>
-        <td>{{ shortened }}</td>
+        <td :title="data.file_comment">
+            <textarea readonly :value="shortened"></textarea>
+        </td>
         <td>{{ permissions }}</td>
         <td :title="data.created_at">{{ date }}</td>
 
         <td>
-            <button>Remove</button>
+            <input type="checkbox" />
         </td>
 
         <td>
@@ -72,7 +74,7 @@ import Loading from "@/components/LoadingItem.vue";
 import moment from "moment";
 import Swal from "sweetalert2";
 
-// TODO: Expand image on hover
+// TODO: File preview
 
 const coverImage = ref("");
 const modal = ref(false);
@@ -210,5 +212,9 @@ watch(modal, () => {
 img {
     width: 50px;
     height: 50px;
+}
+
+textarea {
+    resize: none;
 }
 </style>
