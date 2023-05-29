@@ -2,13 +2,13 @@ import type { Error } from "@/types";
 
 export interface FileEditUpdate extends Error {}
 export interface FileUpdate {
-    id: string,
+    id: string;
     comment: string;
     perm: string;
 }
 
 export interface FileUpload {
-    file: File,
+    file: File;
     comment: string;
     perm: string;
     password?: string;

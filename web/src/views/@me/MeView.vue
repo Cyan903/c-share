@@ -1,15 +1,28 @@
 <template>
     <div>
+        <pre>{{ deleteList }}</pre>
         <div>
-            <input type="text" v-model="query.search" placeholder="Search..." />
-            <button @click="modals.filter = true">Filter</button>
+            <input
+                type="text"
+                :disabled="deleteMode"
+                v-model="query.search"
+                placeholder="Search..."
+            />
+
+            <button :disabled="deleteMode" @click="modals.filter = true">
+                Filter
+            </button>
         </div>
 
         <div>
-            <button @click="modals.add = true">Add</button>
+            <button :disabled="deleteMode" @click="modals.add = true">
+                Add
+            </button>
+
             <button @click="deleteMode = !deleteMode">
                 {{ deleteMode ? "Cancel" : "Remove" }}
             </button>
+
             <button
                 v-if="deleteMode"
                 @click="purgeFiles"
@@ -58,6 +71,7 @@
         <div>
             <PageScrollItem
                 :page="parseInt(query.page)"
+                :disabled="deleteMode"
                 @clicked="(n) => (query.page = String(n))"
             />
 
@@ -70,6 +84,7 @@
 
             <SortButtonItem
                 :mode="query.sort"
+                :disabled="deleteMode"
                 @clicked="(n) => (query.sort = n)"
             />
         </div>
@@ -93,7 +108,7 @@
                     <th></th>
                 </tr>
 
-                <BarListItem
+                <FileListItem
                     v-for="d in data"
                     :key="d.id"
                     :data="d"
@@ -124,7 +139,7 @@ import UploadFileItem from "@/components/@me/UploadFileItem.vue";
 import SortButtonItem from "@/components/@me/SortButtonItem.vue";
 import PageScrollItem from "@/components/@me/PageScrollItem.vue";
 import DisplayOrderItem from "@/components/@me/DisplayOrderItem.vue";
-import BarListItem from "@/components/@me/list/BarListItem.vue";
+import FileListItem from "@/components/@me/FileListItem.vue";
 
 import ModalItem from "@/components/@me/util/ModalItem.vue";
 import Loading from "@/components/LoadingItem.vue";

@@ -1,10 +1,11 @@
 <template>
-    <button @click="updateMode">{{ mode }}</button>
+    <button :disabled="disabled" @click="updateMode">{{ mode }}</button>
 </template>
 
 <script lang="ts" setup>
 const props = defineProps<{
     mode: string;
+    disabled: boolean;
 }>();
 
 const emits = defineEmits<{

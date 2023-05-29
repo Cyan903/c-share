@@ -39,7 +39,9 @@ const passwordConfirm = ref("");
 const loading = ref(false);
 
 const [route, router] = [useRoute(), useRouter()];
-const valid = computed(() => useValidPassword(password) && password.value == passwordConfirm.value);
+const valid = computed(
+    () => useValidPassword(password) && password.value == passwordConfirm.value
+);
 
 const updatePassword = async () => {
     const req = await useRequest<ResetToken>(

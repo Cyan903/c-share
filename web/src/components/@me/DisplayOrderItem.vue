@@ -1,7 +1,7 @@
 <template>
     <div>
-        <span>{{ total }}</span> |
-        <span>Order: {{ order }}</span> | <span>Listing: {{ listing }}</span> |
+        <span>{{ total }}</span> | <span>Order: {{ order }}</span> |
+        <span>Listing: {{ listing }}</span> |
         <span>Type: {{ type }}</span>
     </div>
 </template>

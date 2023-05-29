@@ -49,6 +49,7 @@
                 v-if="deleteMode"
                 ref="deleteCheckbox"
                 type="checkbox"
+                :checked="selected"
                 @click="updateSelect"
             />
         </td>
@@ -80,6 +81,7 @@ import moment from "moment";
 import Swal from "sweetalert2";
 
 // TODO: File preview
+// TODO: Update used_storage
 
 const coverImage = ref("");
 const deleteCheckbox = ref<HTMLInputElement>();
