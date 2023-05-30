@@ -1,7 +1,7 @@
 <template>
     <tr>
         <ModalItem :show="modal" @hide="modal = false">
-            <FileViewItem />
+            <FileViewItem :id="data.id" :type="data.file_type" />
 
             <Loading :loading="loading" />
             <ValidPasswordItem
@@ -29,8 +29,8 @@
             </div>
         </ModalItem>
 
-        <td>
-            <img :src="coverImage" />
+        <td class="small-image">
+            <FileViewItem :id="data.id" :type="data.file_type" :small="true" />
         </td>
 
         <td>
@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted, reactive, watch, toRef } from "vue";
+import { computed, ref, reactive, watch, toRef } from "vue";
 import type {
     FileEditUpdate,
     FileUpdate,
@@ -80,10 +80,8 @@ import Loading from "@/components/LoadingItem.vue";
 import moment from "moment";
 import Swal from "sweetalert2";
 
-// TODO: File preview
 // TODO: Update used_storage
 
-const coverImage = ref("");
 const deleteCheckbox = ref<HTMLInputElement>();
 const modal = ref(false);
 const loading = ref(false);
@@ -181,45 +179,6 @@ const updateSelect = () => {
     selected.value = deleteCheckbox.value.checked;
     emit("updatePurgeList", props.data.id, !selected.value);
 };
-
-onMounted(async () => {
-    const token = localStorage.getItem("token");
-    const files = [
-        "image/bmp",
-        "image/jpeg",
-        "image/x-png",
-        "image/png",
-        "image/gif",
-    ];
-
-    if (!files.includes(props.data.file_type)) {
-        // TODO: Default icon
-        coverImage.value = "favicon.ico";
-        return;
-    }
-
-    if (!token) return;
-
-    const req = await fetch(
-        `${import.meta.env.VITE_API}/@me/f/${props.data.id}`,
-        {
-            headers: {
-                Token: token,
-            },
-        }
-    )
-        .then((r) => r.blob())
-        .catch(() => {
-            Swal.fire({
-                title: `Could not load image ${props.data.id}!`,
-                icon: "error",
-                confirmButtonText: "Okay",
-            });
-        });
-
-    if (!req) return;
-    coverImage.value = URL.createObjectURL(req);
-});
 
 watch(modal, () => {
     edit.comment = props.data.file_comment;
