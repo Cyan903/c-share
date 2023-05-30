@@ -11,15 +11,20 @@
 </template>
 
 <script lang="ts" setup>
-// TODO: ESC close
+import { onMounted, onUnmounted } from "vue";
 
 defineProps<{
     show: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
     (e: "hide"): void;
 }>();
+
+const escape = (e: KeyboardEvent) => (e.key == "Escape" ? emit("hide") : 0);
+
+onMounted(() => window.addEventListener("keydown", escape));
+onUnmounted(() => window.removeEventListener("keydown", escape));
 </script>
 
 <style scoped>

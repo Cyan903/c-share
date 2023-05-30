@@ -80,8 +80,6 @@ import Loading from "@/components/LoadingItem.vue";
 import moment from "moment";
 import Swal from "sweetalert2";
 
-// TODO: Update used_storage
-
 const deleteCheckbox = ref<HTMLInputElement>();
 const modal = ref(false);
 const loading = ref(false);

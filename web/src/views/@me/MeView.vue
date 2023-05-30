@@ -253,6 +253,7 @@ const updateFile = (file: FileUpdate) => {
     );
 };
 
+// here
 const uploadFile = async (file: FileUpload) => {
     const uploadData = new FormData();
     const token = localStorage.getItem("token");
@@ -300,8 +301,10 @@ const uploadFile = async (file: FileUpload) => {
         return;
     }
 
-    filterFiles();
     modals.add = false;
+    auth.updateStorage(parseInt(req.json.data.storage));
+
+    filterFiles();
 };
 
 const updateDeleteList = (id: string, del: boolean) => {
@@ -313,6 +316,7 @@ const updateDeleteList = (id: string, del: boolean) => {
     deleteList.value.push(id);
 };
 
+// here
 const purgeFiles = () => {
     Swal.fire({
         title: "Are you sure you want to delete these files?",
@@ -351,6 +355,7 @@ const purgeFiles = () => {
             return;
         }
 
+        auth.updateStorage(parseInt(req.json.message));
         filterFiles();
     });
 };

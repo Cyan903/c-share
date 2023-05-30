@@ -1,7 +1,14 @@
 import type { Error } from "@/types/index";
 
-export interface FileUploadRequest extends Error {}
+export interface FileUploadData {
+    id:      string;
+    storage: string;
+}
+
 export interface FileDeleteRequest extends Error {}
+export interface FileUploadRequest extends Error {
+    data: FileUploadData;
+}
 
 export interface AtMe extends Error {
     code: number;

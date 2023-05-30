@@ -68,6 +68,10 @@ export const useAuthStore = defineStore("auth", () => {
         clearInterval(timer);
     };
 
+    const updateStorage = (storage: number) => {
+        userData.usedStorage = storage;
+    }
+
     watch(token, () => localStorage.setItem("token", token.value));
     onMounted(() => {
         const storage = localStorage.getItem("token");
@@ -82,6 +86,7 @@ export const useAuthStore = defineStore("auth", () => {
         token,
         userData,
         isLoggedIn,
+        updateStorage,
         login,
         logout,
     };
