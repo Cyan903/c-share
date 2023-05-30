@@ -70,7 +70,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     const updateStorage = (storage: number) => {
         userData.usedStorage = storage;
-    }
+    };
 
     watch(token, () => localStorage.setItem("token", token.value));
     onMounted(() => {

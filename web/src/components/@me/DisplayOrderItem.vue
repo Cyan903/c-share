@@ -2,7 +2,7 @@
     <div>
         <span>{{ total }}</span> | <span>Order: {{ order }}</span> |
         <span>Listing: {{ listing }}</span> |
-        <span>Type: {{ type }}</span>
+        <span>Type: {{ type || "Any" }}</span>
     </div>
 </template>
 

@@ -1,11 +1,10 @@
 <template>
     <div>
         <div>
-            <input
-                type="text"
+            <DelayedInputItem
                 :disabled="deleteMode"
                 v-model="query.search"
-                placeholder="Search..."
+                placehold="Search..."
             />
 
             <button :disabled="deleteMode" @click="modals.filter = true">
@@ -34,11 +33,7 @@
         <ModalItem :show="modals.filter" @hide="modals.filter = false">
             <div>
                 <span>File Type</span> |
-                <input
-                    type="text"
-                    v-model="query.type"
-                    placeholder="text/html"
-                />
+                <DelayedInputItem v-model="query.type" placehold="text/html" />
             </div>
 
             <div>
@@ -140,17 +135,16 @@ import PageScrollItem from "@/components/@me/PageScrollItem.vue";
 import DisplayOrderItem from "@/components/@me/DisplayOrderItem.vue";
 import FileListItem from "@/components/@me/FileListItem.vue";
 
+import DelayedInputItem from "@/components/@me/util/DelayedInputItem.vue";
 import ModalItem from "@/components/@me/util/ModalItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 
 import Swal from "sweetalert2";
 
-// TODO: Limit updates without watch()
-
 const auth = useAuthStore();
 const data = ref(Array<FileListingData>(0));
-const total = ref(0);
 const deleteList = ref(Array<string>(0));
+const total = ref(0);
 
 const loading = ref(false);
 const nothingFound = ref(false);

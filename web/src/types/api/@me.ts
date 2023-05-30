@@ -1,7 +1,7 @@
 import type { Error } from "@/types/index";
 
 export interface FileUploadData {
-    id:      string;
+    id: string;
     storage: string;
 }
 
