@@ -1,6 +1,5 @@
 <template>
     <div>
-        <pre>{{ deleteList }}</pre>
         <div>
             <input
                 type="text"
@@ -356,7 +355,16 @@ const purgeFiles = () => {
     });
 };
 
-watch(query, filterFiles);
+// Reset page and update data
+const resetPage = () => (query.page = String(0));
+
+watch(() => query.listing, resetPage);
+watch(() => query.type, resetPage);
+watch(() => query.order, resetPage);
+watch(() => query.search, resetPage);
+
 watch(deleteMode, () => (deleteList.value.length = 0));
+watch(query, filterFiles);
+
 onMounted(filterFiles);
 </script>

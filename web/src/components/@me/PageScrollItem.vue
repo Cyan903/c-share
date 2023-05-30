@@ -4,7 +4,7 @@
             &lt;
         </button>
 
-        <span>{{ page }} </span>
+        <span>{{ page + 1 }}</span>
 
         <button @click="updatePage(1)" :disabled="disabled">&gt;</button>
     </div>
