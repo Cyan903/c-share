@@ -93,8 +93,9 @@
             <table v-if="!nothingFound">
                 <tr>
                     <th>Image</th>
-                    <th>File ID</th>
+                    <th>ID</th>
                     <th>File Type</th>
+                    <th>File Size</th>
                     <th>File Comment</th>
                     <th>Permissions</th>
                     <th>Upload Date</th>
@@ -120,6 +121,7 @@
 import { reactive, ref, watch, onMounted, computed } from "vue";
 
 import { useRequest } from "@/use/useAPI";
+import { useStorage } from "@/use/useStorage";
 import { useAuthStore } from "@/stores/auth";
 import type { FileUploadRequest, FileDeleteRequest } from "@/types/api/@me";
 import type {
@@ -215,29 +217,6 @@ const filterFiles = async () => {
     nothingFound.value = true;
 };
 
-const usedStorage = computed(() => {
-    const units = [
-        "bytes",
-        "KiB",
-        "MiB",
-        "GiB",
-        "TiB",
-        "PiB",
-        "EiB",
-        "ZiB",
-        "YiB",
-    ];
-
-    let n = parseInt(String(auth.userData.usedStorage), 10) || 0;
-    let l = 0;
-
-    while (n >= 1024 && ++l) {
-        n = n / 1024;
-    }
-
-    return n.toFixed(n < 10 && l > 0 ? 1 : 0) + " " + units[l];
-});
-
 const updateFile = (file: FileUpdate) => {
     const idx = data.value.map((n) => n.id).indexOf(file.id);
 
@@ -247,7 +226,6 @@ const updateFile = (file: FileUpdate) => {
     );
 };
 
-// here
 const uploadFile = async (file: FileUpload) => {
     const uploadData = new FormData();
     const token = localStorage.getItem("token");
@@ -310,7 +288,6 @@ const updateDeleteList = (id: string, del: boolean) => {
     deleteList.value.push(id);
 };
 
-// here
 const purgeFiles = () => {
     Swal.fire({
         title: "Are you sure you want to delete these files?",
@@ -354,9 +331,10 @@ const purgeFiles = () => {
     });
 };
 
-// Reset page and update data
 const resetPage = () => (query.page = String(0));
+const usedStorage = computed(() => useStorage(auth.userData.usedStorage));
 
+// Reset page and update data
 watch(() => query.listing, resetPage);
 watch(() => query.type, resetPage);
 watch(() => query.order, resetPage);

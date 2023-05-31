@@ -33,14 +33,14 @@
             <FileViewItem :id="data.id" :type="data.file_type" :small="true" />
         </td>
 
-        <td>
-            <a>{{ data.id }}</a>
-        </td>
-
+        <td>{{ data.id }}</td>
         <td>{{ data.file_type }}</td>
+        <td :title="`${data.file_size} bytes`">{{ fileSize }}</td>
+
         <td :title="data.file_comment">
             <textarea readonly :value="shortened"></textarea>
         </td>
+
         <td>{{ permissions }}</td>
         <td :title="data.created_at">{{ date }}</td>
 
@@ -69,6 +69,7 @@ import type {
 } from "@/types/api/@me/f";
 
 import { useValidComment, useValidPassword } from "@/use/useValidate";
+import { useStorage } from "@/use/useStorage";
 import { useRequest } from "@/use/useAPI";
 
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
@@ -119,6 +120,7 @@ const shortened = computed(() =>
 );
 
 const date = computed(() => moment(props.data.created_at).fromNow());
+const fileSize = computed(() => useStorage(props.data.file_size));
 const permissions = computed(
     () => ["Public", "Private", "Unlisted"][props.data.permissions]
 );
