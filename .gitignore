@@ -1,2 +1,6 @@
+# Builds
+/bin
+
+# Private
 config.yaml
 todo
