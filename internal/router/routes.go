@@ -14,11 +14,12 @@ import (
 func routes() http.Handler {
 	mux := chi.NewRouter()
 
-	info := httprate.LimitByIP(10, 10*time.Minute)
-	email := httprate.LimitByIP(3, 5*time.Minute)
-	reset := httprate.LimitByIP(5, 5*time.Minute)
+	info := httprate.Limit(10, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
+	auth := httprate.Limit(15, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
+	email := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
+	reset := httprate.Limit(10, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
 
-	mux.Use(httprate.LimitByIP(300, 1*time.Minute))
+	mux.Use(httprate.Limit(250, 1*time.Minute, httprate.WithLimitHandler(RateLimit)))
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   config.Data.CorsAllow,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -34,7 +35,7 @@ func routes() http.Handler {
 		r.Get("/f", handlers.FilesListing)
 		r.Get("/f/{id}", handlers.GetPrivate)
 		r.Get("/f/{id}/info", handlers.PrivateFileInfo)
-		r.Patch("/f/{id}/edit", handlers.EditFileInfo)
+		r.Post("/f/{id}/edit", handlers.EditFileInfo)
 
 		r.With(info).Post("/profile/nickname", handlers.UpdateNickname)
 		r.With(info).Post("/profile/password", handlers.UpdatePassword)
@@ -47,8 +48,8 @@ func routes() http.Handler {
 		r.Delete("/upload", handlers.DeleteUpload)
 	})
 
-	mux.Post("/auth/register", handlers.Register)
-	mux.Post("/auth/login", handlers.Login)
+	mux.With(auth).Post("/auth/register", handlers.Register)
+	mux.With(auth).Post("/auth/login", handlers.Login)
 
 	mux.With(reset).Post("/auth/pwreset", handlers.SendPasswordReset)
 	mux.With(reset).Post("/auth/{id}", handlers.ResetPassword)

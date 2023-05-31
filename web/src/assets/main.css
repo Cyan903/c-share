@@ -1,0 +1,9 @@
+@import "./base.css";
+
+#app {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.invalid {
+    color: red;
+}

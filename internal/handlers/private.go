@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -17,28 +16,17 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type fileSearch struct {
-	Listing string `json:"listing"`    // [any, public, private, unlisted]
-	Type    string `json:"file_type"`  // [any, text/html]
-	Order   string `json:"file_order"` // [any, size, type, comment, permission, date]
-	Sort    string `json:"sort"`       // [asc, desc]
-}
-
-// ? page = 0 & search = ? (optional)
+// ? page = 0
+// & listing = [any, public, private, unlisted]
+// & type = [any, text/html]
+// & order = [any, size, type, comment, permission, date]
+// & sort = [asc, desc]
+// & search = ? (optional)
 func FilesListing(w http.ResponseWriter, r *http.Request) {
-	var fsearch fileSearch
-
 	id := r.Context().Value(jwt.StandardClaims{}).(*jwt.StandardClaims)
 	response := api.SimpleResponse{Writer: w}
-	jsonResponse := api.AdvancedResponse{Writer: w}
-	fdecoder := json.NewDecoder(r.Body)
+	json := api.AdvancedResponse{Writer: w}
 
-	if err := fdecoder.Decode(&fsearch); err != nil {
-		response.BadRequest("Invalid JSON!")
-		return
-	}
-
-	search := r.URL.Query().Get("search")
 	page := r.URL.Query().Get("page")
 	pagn, err := strconv.Atoi(page)
 
@@ -47,44 +35,55 @@ func FilesListing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate params
-	if !slices.Contains([]string{"any", "public", "private", "unlisted"}, fsearch.Listing) {
+	perms := []string{"any", "public", "private", "unlisted"}
+	perm := r.URL.Query().Get("listing")
+
+	if !slices.Contains(perms, perm) {
 		response.BadRequest("Invalid listing!")
 		return
 	}
 
-	if fsearch.Type == "" {
+	fileType := r.URL.Query().Get("type")
+
+	if fileType == "" {
 		response.BadRequest("Invalid file type!")
 		return
 	}
 
-	if !slices.Contains([]string{"any", "size", "type", "comment", "permission", "date"}, fsearch.Order) {
+	orders := []string{"size", "type", "comment", "permission", "date"}
+	order := r.URL.Query().Get("order")
+
+	if !slices.Contains(orders, order) {
 		response.BadRequest("Invalid order!")
 		return
 	}
 
-	if fsearch.Sort != "asc" && fsearch.Sort != "desc" {
+	sort := r.URL.Query().Get("sort")
+
+	if sort != "asc" && sort != "desc" {
 		response.BadRequest("Invalid sort!")
 		return
 	}
+
+	search := r.URL.Query().Get("search")
 
 	if len(search) > 99 {
 		response.BadRequest("Invalid search!")
 		return
 	}
 
-	files, count, err := database.FileListing(id.Issuer, pagn, fsearch.Listing, fsearch.Type, fsearch.Order, fsearch.Sort, search)
+	files, count, err := database.FileListing(id.Issuer, pagn, perm, fileType, order, sort, search)
 
 	if err != nil {
 		response.InternalError()
 		return
 	}
 
-	jsonResponse.Code = http.StatusOK
-	jsonResponse.Data = files
-	jsonResponse.Count = count
+	json.Code = http.StatusOK
+	json.Data = files
+	json.Count = count
 
-	jsonResponse.JSON()
+	json.JSON()
 }
 
 func GetPrivate(w http.ResponseWriter, r *http.Request) {

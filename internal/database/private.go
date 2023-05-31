@@ -35,7 +35,6 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 	}
 
 	orders := map[string]string{
-		"any":        "user",
 		"size":       "file_size",
 		"type":       "file_type",
 		"comment":    "file_comment",
@@ -63,8 +62,8 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 	count := fmt.Sprintf(
 		`
 			SELECT COUNT(1) FROM files
-			WHERE user = ? %s AND %s ?
-		`, perms[perm], fileFilter,
+			WHERE user = ? %s AND %s ? AND (%s ?)
+		`, perms[perm], fileFilter, searchFilter,
 	)
 
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
@@ -95,7 +94,7 @@ func FileListing(uid string, page int, perm, fileType, order, sort, comment stri
 		files = append(files, file)
 	}
 
-	if err := Conn.QueryRowContext(c, count, uid, fileType).Scan(&pages); err != nil {
+	if err := Conn.QueryRowContext(c, count, uid, fileType, "%"+comment+"%").Scan(&pages); err != nil {
 		log.Error.Println("Could not count files -", err)
 		return files, 0, err
 	}
@@ -163,7 +162,7 @@ func FileInfo(uid, fileID string) (FileData, error) {
 	return file, nil
 }
 
-func UpdateFileInfo(id, user, password, comment string, permission int) (error) {
+func UpdateFileInfo(id, user, password, comment string, permission int) error {
 	if _, err := GetPrivateFile(id, user); err != nil {
 		log.Error.Println("Could not update file info -", err)
 		return err

@@ -61,6 +61,7 @@ func WhoAmI(w http.ResponseWriter, r *http.Request) {
 
 func Upload(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
+	successResponse := api.AdvancedResponse{Writer: w}
 
 	// Check file size
 	if r.ContentLength > config.Data.UploadLimit {
@@ -155,12 +156,21 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Storage
-	if err := database.UpdateStorage(id.Issuer); err != nil {
+	storage, err := database.UpdateStorage(id.Issuer)
+
+	if err != nil {
 		response.InternalError()
 		return
 	}
 
-	response.Success(rid)
+	successResponse.Code = 200
+	successResponse.Count = 2
+	successResponse.Data = struct {
+		ID      string `json:"id"`
+		Storage string `json:"storage"`
+	}{rid, strconv.FormatInt(storage, 10)}
+
+	successResponse.JSON()
 }
 
 func DeleteUpload(w http.ResponseWriter, r *http.Request) {
@@ -230,10 +240,12 @@ func DeleteUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update Storage
-	if err := database.UpdateStorage(id.Issuer); err != nil {
+	storage, err := database.UpdateStorage(id.Issuer)
+
+	if err != nil {
 		response.InternalError()
 		return
 	}
 
-	response.Success("Files removed!")
+	response.Success(strconv.FormatInt(storage, 10))
 }

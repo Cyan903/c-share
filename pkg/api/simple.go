@@ -23,6 +23,7 @@ func (s *SimpleResponse) JSON() {
 	}
 
 	s.Writer.Header().Set("Content-Type", "application/json")
+	s.Writer.WriteHeader(s.Code)
 	s.Writer.Write(js)
 }
 
@@ -76,5 +77,12 @@ func (s *SimpleResponse) Success(msg string) {
 	s.Code = http.StatusOK
 	s.Message = msg
 
+	s.JSON()
+}
+
+func (s *SimpleResponse) TooManyRequests() {
+	s.Code = http.StatusTooManyRequests
+	s.Message = "Too many requests!"
+	
 	s.JSON()
 }
