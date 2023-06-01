@@ -27,6 +27,7 @@ import { useValidNickname } from "@/use/useValidate";
 import type { NicknameUpdate } from "@/types/api/@me/profile";
 
 import ValidNicknameItem from "@/components/valid/ValidNicknameItem.vue";
+import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const auth = useAuthStore();

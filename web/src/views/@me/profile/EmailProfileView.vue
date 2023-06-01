@@ -52,9 +52,9 @@ import { useRequest } from "@/use/useAPI";
 import type { EmailUpdate, EmailSendVerify } from "@/types/api/@me/profile";
 
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
+import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
-import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
 
 const auth = useAuthStore();
 const loading = ref(false);
