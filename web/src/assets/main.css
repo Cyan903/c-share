@@ -1,5 +1,6 @@
 @import "./base.css";
 @import "./pages/auth.css";
+@import "./pages/profile.css";
 
 #app {
     font-family: Arial, Helvetica, sans-serif;

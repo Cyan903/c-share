@@ -16,6 +16,14 @@ export default [
         meta: { title: "Profile", requiresAuth: true },
         children: [
             {
+                path: "",
+                name: "prof-none",
+                component: () =>
+                    import("@/views/@me/profile/NoneProfileView.vue"),
+                meta: { title: "Profile" },
+            },
+
+            {
                 path: "email",
                 name: "prof-email",
                 component: () =>

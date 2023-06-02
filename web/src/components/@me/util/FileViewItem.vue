@@ -1,11 +1,11 @@
 <template>
     <div v-if="small">
-        <img v-if="type == 'image'" :src="source" :alt="props.id" width="35" />
+        <img v-if="fileType == 'image'" :src="source" :alt="props.id" width="35" />
     </div>
     <div class="preview" v-else>
-        <img v-if="type == 'image'" :src="source" :alt="props.id" />
-        <video v-else-if="type == 'video'" :src="source" controls></video>
-        <audio v-else-if="type == 'audio'" :src="source" controls></audio>
+        <img v-if="fileType == 'image'" :src="source" :alt="props.id" />
+        <video v-else-if="fileType == 'video'" :src="source" controls></video>
+        <audio v-else-if="fileType == 'audio'" :src="source" controls></audio>
         <div v-else>Unknown type!</div>
     </div>
 </template>
@@ -15,7 +15,7 @@ import { onMounted, ref } from "vue";
 import Swal from "sweetalert2";
 
 const source = ref("");
-const type = ref("");
+const fileType = ref("");
 
 const props = defineProps<{
     id: string;
@@ -43,22 +43,22 @@ onMounted(() => {
     const audios = ["audio/mp3", "audio/x-wav", "audio/wav", "audio/ogg"];
 
     if (images.includes(props.type)) {
-        type.value = "image";
+        fileType.value = "image";
         return display();
     }
 
     if (!props.small && videos.includes(props.type)) {
-        type.value = "video";
+        fileType.value = "video";
         return display();
     }
 
     if (!props.small && audios.includes(props.type)) {
-        type.value = "audio";
+        fileType.value = "audio";
         return display();
     }
 
     if (props.small) {
-        type.value = "image";
+        fileType.value = "image";
         source.value = "favicon.ico";
     }
 });

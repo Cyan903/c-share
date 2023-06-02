@@ -1,17 +1,21 @@
 <template>
     <div>
         <Loading :loading="loading" />
-
-        <h1>Nickname</h1>
-        <h4>Hello {{ auth.userData.nickname }}</h4>
+        
+        <h2 class="font-semibold text-3xl my-4">Nickname Settings</h2>
+        <p class="mx-4 my-3">
+            Must be between 4 and 10 characters. Cannot use numbers or special
+            characters.
+        </p>
 
         <form>
             <ValidNicknameItem v-model="nick" />
 
             <input
+                :disabled="!valid"
                 type="submit"
                 value="Update Nickname"
-                :disabled="!valid"
+                class="btn btn-primary btn-outline mt-4"
                 @click.prevent="updateNickname"
             />
         </form>

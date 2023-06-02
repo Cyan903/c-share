@@ -2,8 +2,11 @@
     <div>
         <Loading :loading="loading" />
 
-        <h1>Welcome {{ auth.userData.nickname }}</h1>
-        <p>Code: {{ route.params.id }}</p>
+        <h2 class="font-semibold text-3xl my-4">Email Code Verification</h2>
+        <p v-if="invalid">Could not verify email address!</p>
+        <p v-else>
+            <span class="text-success">Success!</span> Email has been verified!
+        </p>
     </div>
 </template>
 
@@ -20,10 +23,10 @@ import Swal from "sweetalert2";
 const [route, router] = [useRoute(), useRouter()];
 const auth = useAuthStore();
 const loading = ref(false);
+const invalid = ref(false);
 
 onMounted(async () => {
     const storage = localStorage.getItem("token");
-
     const req = await useRequest<EmailCodeVerify>(
         `/@me/profile/${route.params.id}`,
         {
@@ -42,6 +45,7 @@ onMounted(async () => {
             confirmButtonText: "Okay",
         });
 
+        invalid.value = true;
         return;
     }
 
@@ -53,6 +57,6 @@ onMounted(async () => {
     });
 
     auth.userData.emailVerified = true;
-    router.push("/@me");
+    router.push("/@me/profile/email");
 });
 </script>

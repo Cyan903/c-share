@@ -1,16 +1,18 @@
 <template>
     <div>
         <Loading :loading="loading" />
-        <EmailStatusItem />
+        <div>
+            <h2 class="font-semibold text-3xl my-4">Password Settings</h2>
+            <EmailStatusItem />
 
-        <h2>Password Change</h2>
-        <p v-if="!auth.userData.emailVerified">
-            Your email must be verified in order to change your password. You
-            can send a verification code
-            <router-link to="/@me/profile/email">here</router-link>.
-        </p>
+            <p v-if="!auth.userData.emailVerified" class="mb-4">
+                Your email must be verified in order to change your password.
+                You can send a verification code
+                <router-link to="/@me/profile/email">here</router-link>.
+            </p>
+        </div>
 
-        <form>
+        <form class="profile-inputs">
             <ValidPasswordItem
                 v-model="pw.old"
                 :disabled="!auth.userData.emailVerified"
@@ -30,9 +32,10 @@
             />
 
             <input
-                type="submit"
-                value="Update"
                 :disabled="!valid"
+                type="submit"
+                value="Update Password"
+                class="btn btn-primary btn-outline mt-4"
                 @click.prevent="updatePassword"
             />
         </form>

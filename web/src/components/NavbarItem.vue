@@ -36,7 +36,7 @@
                         </li>
 
                         <li class="lg:hidden">
-                            <router-link to="/@me/profile">
+                            <router-link to="/@me/profile/email">
                                 Settings
                             </router-link>
                         </li>
@@ -92,7 +92,7 @@
                     </a>
                     <ul class="p-2 bg-base-100">
                         <li>
-                            <router-link to="/@me/profile">
+                            <router-link to="/@me/profile/email">
                                 Settings
                             </router-link>
                         </li>
@@ -142,5 +142,9 @@ const logout = () => {
 /* TODO: Improve this!!! */
 .router-link-exact-active:not(.logo) {
     color: red;
+}
+
+.navbar * {
+    z-index: 1;
 }
 </style>
