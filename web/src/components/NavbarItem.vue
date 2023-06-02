@@ -1,5 +1,5 @@
 <template>
-    <div class="navbar bg-base-100 rounded-box">
+    <div class="navbar bg-base-100 rounded-box my-4 shadow-xl">
         <div class="flex-1">
             <div class="dropdown">
                 <label tabindex="0" class="btn btn-ghost btn-circle">

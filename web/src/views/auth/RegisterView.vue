@@ -1,24 +1,28 @@
 <template>
-    <div>
+    <div class="auth-form flex flex-wrap items-center justify-center">
         <Loading :loading="loading" />
 
-        <h1>Register</h1>
-        <form>
-            <ValidNicknameItem v-model="nick" />
-            <ValidEmailItem v-model="email" />
-            <ValidPasswordItem v-model="password" />
-            <ValidPasswordConfirmItem
-                v-model="passwordConfirm"
-                :check="password"
-            />
+        <div class="card card-normal bg-base-300 shadow-xl">
+            <div class="card-body items-center text-center">
+                <h2 class="card-title text-3xl">Register</h2>
 
-            <input
-                :disabled="!valid"
-                type="submit"
-                value="Submit"
-                @click.prevent="register"
-            />
-        </form>
+                <ValidNicknameItem v-model="nick" />
+                <ValidEmailItem v-model="email" />
+                <ValidPasswordItem v-model="password" />
+                <ValidPasswordConfirmItem
+                    v-model="passwordConfirm"
+                    :check="password"
+                />
+
+                <input
+                    class="btn btn-primary w-5/6 my-4"
+                    :disabled="!valid"
+                    type="submit"
+                    value="Register"
+                    @click.prevent="register"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -86,6 +90,8 @@ const register = async () => {
 
         email.value = "";
         password.value = "";
+        passwordConfirm.value = "";
+
         return;
     }
 

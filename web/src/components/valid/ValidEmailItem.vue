@@ -1,21 +1,23 @@
 <template>
-    <div>
+    <label class="input-group">
         <input
-            type="text"
             :value="modelValue"
             :disabled="disabled"
-            @input="updateText"
+            :class="{ 'input-error': !valid && !disabled }"
+            type="text"
             placeholder="Email"
+            class="input input-bordered"
+            @input="updateText"
         />
 
         <button
-            :class="{ invalid: !valid && !disabled }"
             @click.prevent="why"
             :disabled="valid || disabled"
+            class="btn btn-error"
         >
             ?
         </button>
-    </div>
+    </label>
 </template>
 
 <script lang="ts" setup>

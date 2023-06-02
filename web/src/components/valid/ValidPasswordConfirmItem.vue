@@ -1,25 +1,28 @@
 <template>
-    <div>
+    <label class="input-group">
         <input
-            type="password"
             :value="modelValue"
             :disabled="disabled"
-            @input="updateText"
+            :class="{ 'input-error': !valid && !disabled }"
+            type="password"
             placeholder="Confirm Password"
+            class="input input-bordered"
+            @input="updateText"
         />
 
         <button
-            :class="{ invalid: !valid && !disabled }"
             @click.prevent="why"
             :disabled="valid || disabled"
+            class="btn btn-error"
         >
             ?
         </button>
-    </div>
+    </label>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, toRef } from "vue";
+import { useValidPassword } from "@/use/useValidate";
 import Swal from "sweetalert2";
 
 const props = defineProps<{
@@ -36,7 +39,7 @@ const updateText = (evt: Event) => {
     emit("update:modelValue", (evt.target as HTMLInputElement).value);
 };
 
-const valid = computed(() => props.modelValue == props.check);
+const valid = computed(() => useValidPassword(toRef(props.modelValue)) && props.modelValue == props.check);
 const why = () => {
     Swal.fire({
         title: "Passwords must match!",

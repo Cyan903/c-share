@@ -1,0 +1,33 @@
+.auth-form .card {
+    max-width: 500px;
+    width: 100%;
+}
+
+.auth-form .input-group {
+    display: block;
+    margin: auto;
+}
+
+.auth-form .input-group input {
+    width: 70%;
+}
+
+@media (max-width: 400px) {
+    .auth-form .input {
+        border-radius: 10px !important;
+    }
+
+    .auth-form .input-group * {
+        margin: 0 !important;
+        width: 100%;
+    }
+
+    .auth-form .card-body {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .auth-form .btn-error {
+        display: none !important;
+    }
+}

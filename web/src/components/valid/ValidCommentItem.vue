@@ -1,20 +1,22 @@
 <template>
-    <div>
+    <label class="input-group">
         <input
-            type="text"
             :value="modelValue"
-            @input="updateText"
+            :class="{ 'input-error': !valid }"
+            type="text"
             placeholder="File Comment"
+            class="input input-bordered"
+            @input="updateText"
         />
 
         <button
-            :class="{ invalid: !valid }"
             @click.prevent="why"
             :disabled="valid"
+            class="btn btn-error"
         >
             ?
         </button>
-    </div>
+    </label>
 </template>
 
 <script lang="ts" setup>

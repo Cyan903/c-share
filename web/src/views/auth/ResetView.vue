@@ -1,23 +1,26 @@
 <template>
-    <div>
+    <div class="auth-form flex flex-wrap items-center justify-center">
         <Loading :loading="loading" />
 
-        <h1>Password Reset</h1>
-        <p>
-            Please note that your email must be verified in order to request a
-            password reset.
-        </p>
+        <div class="card card-normal bg-base-300 shadow-xl">
+            <div class="card-body items-center text-center">
+                <h2 class="card-title text-3xl">Password Reset</h2>
+                <p class="mb-4">
+                    Please note that your email must be verified in order to
+                    request a password reset.
+                </p>
 
-        <form>
-            <ValidEmailItem v-model="email" />
+                <ValidEmailItem v-model="email" />
 
-            <input
-                :disabled="!valid"
-                type="submit"
-                value="Submit"
-                @click.prevent="sendVerification"
-            />
-        </form>
+                <input
+                    class="btn btn-primary w-5/6 my-4"
+                    :disabled="!valid"
+                    type="submit"
+                    value="Send Reset"
+                    @click.prevent="sendVerification"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
