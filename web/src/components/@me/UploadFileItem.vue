@@ -1,29 +1,39 @@
 <template>
-    <div>
-        <div>
-            <input type="file" @change="updateFile" />
+    <div class="upload-form">
+        <h3 class="font-semibold text-2xl mb-6 text-center">File Upload</h3>
+        <div class="text-center">
+            <input
+                type="file"
+                class="file-input file-input-bordered w-full max-w-xs"
+                @change="updateFile"
+            />
+
+            <label class="input-group">
+                <button class="btn btn-active no-animation">Permission</button>
+                <select class="select select-bordered" v-model="upload.perm">
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                    <option value="unlisted">Unlisted</option>
+                </select>
+            </label>
         </div>
 
-        <div>
-            <span>Permission</span> |
-            <select v-model="upload.perm">
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-                <option value="unlisted">Unlisted</option>
-            </select>
+        <div class="divider"></div>
+        <div class="grid content-between grid-cols-1">
+            <div v-if="hasPassword">
+                <ValidPasswordItem v-model="upload.password" />
+                <ValidPasswordConfirmItem
+                    v-model="upload.confirm"
+                    :check="upload.password"
+                />
+            </div>
 
             <ValidCommentItem v-model="upload.comment" />
         </div>
 
-        <div v-if="hasPassword">
-            <ValidPasswordItem v-model="upload.password" />
-            <ValidPasswordConfirmItem
-                v-model="upload.confirm"
-                :check="upload.password"
-            />
-        </div>
-
-        <button :disabled="!valid" @click="uploadFile">Upload</button>
+        <button class="block my-3 m-auto btn btn-primary" :disabled="!valid" @click="uploadFile">
+            Upload
+        </button>
     </div>
 </template>
 

@@ -50,7 +50,6 @@
                     </label>
                 </li>
 
-                <hr class="lg:hidden" />
                 <li class="lg:hidden">
                     <label for="my-drawer" class="drawer-button">Close</label>
                 </li>

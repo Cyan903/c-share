@@ -1,12 +1,19 @@
 <template>
     <div v-if="small">
-        <img v-if="fileType == 'image'" :src="source" :alt="props.id" width="35" />
+        <img
+            v-if="fileType == 'image'"
+            :src="source"
+            :alt="props.id"
+            width="35"
+        />
     </div>
     <div class="preview" v-else>
         <img v-if="fileType == 'image'" :src="source" :alt="props.id" />
         <video v-else-if="fileType == 'video'" :src="source" controls></video>
         <audio v-else-if="fileType == 'audio'" :src="source" controls></audio>
-        <div v-else>Unknown type!</div>
+        <div class="italic p-5 text-base-content text-center" v-else>
+            Unknown type!
+        </div>
     </div>
 </template>
 
@@ -85,13 +92,3 @@ const display = async () => {
     source.value = URL.createObjectURL(req);
 };
 </script>
-
-<style scoped>
-.preview {
-    text-align: center;
-}
-
-img {
-    max-width: 500px;
-}
-</style>

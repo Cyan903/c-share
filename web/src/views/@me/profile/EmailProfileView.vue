@@ -19,7 +19,7 @@
             />
         </div>
 
-        <hr class="text-base-100 my-2" />
+        <div class="divider"></div>
         <div class="my-2">
             <h2 class="font-semibold text-3xl my-4">Email Verification</h2>
             <p class="text-left mx-5">
@@ -28,7 +28,10 @@
                 verify your email.
             </p>
 
-            <p class="text-left mx-5 my-4 text-success" v-if="auth.userData.emailVerified">
+            <p
+                class="text-left mx-5 my-4 text-success"
+                v-if="auth.userData.emailVerified"
+            >
                 Hooray! Your email is already verified! Please note that
                 changing it will reset your verification.
             </p>

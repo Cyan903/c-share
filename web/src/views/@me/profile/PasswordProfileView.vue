@@ -10,6 +10,7 @@
                 You can send a verification code
                 <router-link to="/@me/profile/email">here</router-link>.
             </p>
+            <p v-else class="m-4">Your email is verified! You may change your password.</p>
         </div>
 
         <form class="profile-inputs">

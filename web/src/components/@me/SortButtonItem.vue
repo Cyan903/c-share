@@ -1,5 +1,7 @@
 <template>
-    <button :disabled="disabled" @click="updateMode">{{ mode }}</button>
+    <button class="btn btn-sm" :disabled="disabled" @click="updateMode">
+        {{ mode }}
+    </button>
 </template>
 
 <script lang="ts" setup>

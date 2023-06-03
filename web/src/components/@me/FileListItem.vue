@@ -1,62 +1,113 @@
 <template>
     <tr>
         <ModalItem :show="modal" @hide="modal = false">
+            <h3 class="font-semibold text-2xl mb-6 text-center">
+                File Details
+            </h3>
+
             <FileViewItem :id="data.id" :type="data.file_type" />
-
+            <div class="divider"></div>
             <Loading :loading="loading" />
-            <ValidPasswordItem
-                v-model="edit.password"
-                :disabled="edit.perm != 'unlisted'"
-                placehold="File Password"
-            />
 
-            <ValidCommentItem v-model="edit.comment" />
+            <div class="file-list-form text-center">
+                <ValidPasswordItem
+                    v-model="edit.password"
+                    :disabled="edit.perm != 'unlisted'"
+                    placehold="File Password"
+                />
 
-            <span>Listing</span> |
-            <select v-model="edit.perm">
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-                <option value="unlisted">Unlisted</option>
-            </select>
+                <ValidCommentItem v-model="edit.comment" />
 
-            <div>
-                <button :disabled="loading || !valid" @click="updateFile">
-                    Save Changes
+                <label class="input-group">
+                    <button class="btn btn-active no-animation">
+                        Permission
+                    </button>
+                    <select class="select select-bordered" v-model="edit.perm">
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                        <option value="unlisted">Unlisted</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="flex justify-center my-4">
+                <button
+                    class="btn btn-success m-1"
+                    :disabled="loading || !valid"
+                    @click="updateFile"
+                >
+                    Save
                 </button>
-                <button :disabled="loading || !valid" @click="modal = false">
+                <button
+                    class="btn btn-error m-1"
+                    :disabled="loading || !valid"
+                    @click="modal = false"
+                >
                     Cancel
                 </button>
             </div>
         </ModalItem>
 
-        <td class="small-image">
-            <FileViewItem :id="data.id" :type="data.file_type" :small="true" />
-        </td>
-
-        <td>{{ data.id }}</td>
-        <td>{{ data.file_type }}</td>
-        <td :title="`${data.file_size} bytes`">{{ fileSize }}</td>
-
-        <td :title="data.file_comment">
-            <textarea readonly :value="shortened"></textarea>
-        </td>
-
-        <td>{{ permissions }}</td>
-        <td :title="data.created_at">{{ date }}</td>
-
-        <td>
+        <td v-if="deleteMode">
             <input
-                v-if="deleteMode"
                 ref="deleteCheckbox"
                 type="checkbox"
+                class="checkbox"
                 :checked="selected"
                 @click="updateSelect"
             />
         </td>
 
         <td>
-            <button :disabled="deleteMode" @click="modal = true">Edit</button>
+            <div class="flex items-center space-x-3">
+                <div class="avatar">
+                    <div class="mask mask-squircle w-12 h-12 small-image">
+                        <FileViewItem
+                            :id="data.id"
+                            :type="data.file_type"
+                            :small="true"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <div class="font-bold">{{ data.id }}</div>
+                    <div class="text-sm opacity-50" :title="data.created_at">
+                        {{ date }}
+                    </div>
+                </div>
+            </div>
         </td>
+
+        <td>
+            {{ data.file_type }}
+            <br />
+            <span
+                class="badge badge-ghost badge-sm"
+                :title="`${data.file_size} bytes`"
+            >
+                {{ fileSize }}
+            </span>
+        </td>
+
+        <td>{{ permissions }}</td>
+
+        <td :title="data.file_comment">
+            <textarea
+                class="textarea textarea-bordered"
+                readonly
+                :value="shortened"
+            ></textarea>
+        </td>
+
+        <th>
+            <button
+                class="btn btn-ghost btn-xs"
+                :disabled="deleteMode"
+                @click="modal = true"
+            >
+                Details
+            </button>
+        </th>
     </tr>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
     <div>
-        <button @click="updatePage(-1)" :disabled="disabled || page <= 0">
+        <button class="btn btn-xs btn-outline btn-primary" @click="updatePage(-1)" :disabled="disabled || page <= 0">
             &lt;
         </button>
 
-        <span>{{ page + 1 }}</span>
+        <span class="mx-2">{{ page + 1 }}</span>
 
-        <button @click="updatePage(1)" :disabled="disabled">&gt;</button>
+        <button class="btn btn-xs btn-outline btn-primary" @click="updatePage(1)" :disabled="disabled">&gt;</button>
     </div>
 </template>
 

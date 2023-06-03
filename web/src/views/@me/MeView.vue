@@ -1,60 +1,96 @@
 <template>
-    <div>
-        <div>
+    <div class="bg-base-100 rounded-box shadow-xl p-6">
+        <div class="flex">
             <DelayedInputItem
                 :disabled="deleteMode"
+                classes="input grow input-bordered mr-2 mb-2"
                 v-model="query.search"
                 placehold="Search..."
             />
 
-            <button :disabled="deleteMode" @click="modals.filter = true">
+            <button
+                class="btn btn-primary"
+                :disabled="deleteMode"
+                @click="modals.filter = true"
+            >
                 Filter
             </button>
         </div>
 
-        <div>
-            <button :disabled="deleteMode" @click="modals.add = true">
+        <div class="flex gap-1">
+            <button
+                class="btn btn-sm btn-accent"
+                :disabled="deleteMode"
+                @click="modals.add = true"
+            >
                 Add
             </button>
 
-            <button @click="deleteMode = !deleteMode">
+            <button
+                class="btn btn-sm btn-secondary"
+                @click="deleteMode = !deleteMode"
+            >
                 {{ deleteMode ? "Cancel" : "Remove" }}
             </button>
 
             <button
                 v-if="deleteMode"
+                class="btn btn-sm btn-accent"
                 @click="purgeFiles"
                 :disabled="deleteList.length <= 0"
             >
                 Delete
             </button>
+
+            <div class="grow"></div>
+            <b>Used Storage:</b>
+            <span>{{ usedStorage }}</span>
         </div>
 
         <ModalItem :show="modals.filter" @hide="modals.filter = false">
-            <div>
-                <span>File Type</span> |
-                <DelayedInputItem v-model="query.type" placehold="text/html" />
-            </div>
+            <h3 class="font-semibold text-2xl mb-6 text-center">File Filter</h3>
+            <div class="grid justify-center align-center w-3/4 m-auto">
+                <DelayedInputItem
+                    v-model="query.type"
+                    classes="mb-3"
+                    placehold="text/html"
+                    label="File Type"
+                />
 
-            <div>
-                <span>Listing</span> |
-                <select v-model="query.listing">
-                    <option value="any">Any</option>
-                    <option value="public">Public</option>
-                    <option value="private">Private</option>
-                    <option value="unlisted">Unlisted</option>
-                </select>
-            </div>
+                <label class="input-group mb-3">
+                    <button class="btn btn-active no-animation w-1/4">
+                        Listing
+                    </button>
+                    <select
+                        class="select select-bordered w-3/4"
+                        v-model="query.listing"
+                    >
+                        <option value="any">Any</option>
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                        <option value="unlisted">Unlisted</option>
+                    </select>
+                </label>
 
-            <div>
-                <span>Order</span> |
-                <select v-model="query.order">
-                    <option value="size">Size</option>
-                    <option value="type">Type</option>
-                    <option value="comment">Comment</option>
-                    <option value="permission">Permission</option>
-                    <option value="date">Date</option>
-                </select>
+                <label class="input-group mb-3">
+                    <button class="btn btn-active no-animation w-1/4">
+                        Order
+                    </button>
+                    <select
+                        class="select select-bordered w-3/4"
+                        v-model="query.order"
+                    >
+                        <option value="size">Size</option>
+                        <option value="type">Type</option>
+                        <option value="comment">Comment</option>
+                        <option value="permission">Permission</option>
+                        <option value="date">Date</option>
+                    </select>
+                </label>
+
+                <button @click="resetFilters" class="btn btn-error w-4/4">
+                    Reset
+                </button>
             </div>
         </ModalItem>
 
@@ -62,13 +98,7 @@
             <UploadFileItem @fileUpload="uploadFile" />
         </ModalItem>
 
-        <div>
-            <PageScrollItem
-                :page="parseInt(query.page)"
-                :disabled="deleteMode"
-                @clicked="(n) => (query.page = String(n))"
-            />
-
+        <div class="flex my-4">
             <DisplayOrderItem
                 :total="total"
                 :order="query.order"
@@ -76,43 +106,46 @@
                 :type="query.type"
             />
 
-            <SortButtonItem
-                :mode="query.sort"
+            <div class="grow"></div>
+
+            <PageScrollItem
+                :page="parseInt(query.page)"
                 :disabled="deleteMode"
-                @clicked="(n) => (query.sort = n)"
+                @clicked="(n) => (query.page = String(n))"
             />
         </div>
 
-        <div>
-            <b>Used Storage: </b>
-            <span>{{ usedStorage }}</span>
-        </div>
-
         <Loading v-if="loading" :loading="loading" />
-        <div v-else>
-            <table v-if="!nothingFound">
-                <tr>
-                    <th>Image</th>
-                    <th>ID</th>
-                    <th>File Type</th>
-                    <th>File Size</th>
-                    <th>File Comment</th>
-                    <th>Permissions</th>
-                    <th>Upload Date</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-
-                <FileListItem
-                    v-for="d in data"
-                    :key="d.id"
-                    :data="d"
-                    :deleteMode="deleteMode"
-                    @updatePurgeList="updateDeleteList"
-                    @editFile="updateFile"
-                />
+        <div v-else class="flex flex-wrap items-center justify-center">
+            <table v-if="!nothingFound" class="table w-full">
+                <thead>
+                    <tr>
+                        <th v-if="deleteMode">Delete</th>
+                        <th>Image</th>
+                        <th>File Type</th>
+                        <th>Permissions</th>
+                        <th>Comment</th>
+                        <th>
+                            <SortButtonItem
+                                :mode="query.sort"
+                                :disabled="deleteMode"
+                                @clicked="(n) => (query.sort = n)"
+                            />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <FileListItem
+                        v-for="d in data"
+                        :key="d.id"
+                        :data="d"
+                        :deleteMode="deleteMode"
+                        @updatePurgeList="updateDeleteList"
+                        @editFile="updateFile"
+                    />
+                </tbody>
             </table>
-            <h1 v-else>Nothing found...</h1>
+            <h1 v-else class="card-title text-5xl mb-10">Nothing Found!</h1>
         </div>
     </div>
 </template>
@@ -142,6 +175,9 @@ import ModalItem from "@/components/@me/util/ModalItem.vue";
 import Loading from "@/components/LoadingItem.vue";
 
 import Swal from "sweetalert2";
+
+// TODO: Mobile CSS
+// TODO: Improve DisplayOrderItem
 
 const auth = useAuthStore();
 const data = ref(Array<FileListingData>(0));
@@ -328,6 +364,24 @@ const purgeFiles = () => {
 
         auth.updateStorage(parseInt(req.json.message));
         filterFiles();
+    });
+};
+
+const resetFilters = () => {
+    Swal.fire({
+        title: "Are you sure you want to reset these filters?",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        query.page = String(0);
+        query.listing = "any";
+        query.type = "";
+        query.order = "date";
+        query.sort = "desc";
+        query.search = "";
+        modals.filter = false;
     });
 };
 
