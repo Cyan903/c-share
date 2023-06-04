@@ -1,6 +1,6 @@
 <template>
     <div class="bg-base-100 rounded-box shadow-xl p-6">
-        <div class="flex">
+        <div class="flex md:flex-row flex-col">
             <DelayedInputItem
                 :disabled="deleteMode"
                 classes="input grow input-bordered mr-2 mb-2"
@@ -9,7 +9,7 @@
             />
 
             <button
-                class="btn btn-primary"
+                class="btn btn-primary mb-2"
                 :disabled="deleteMode"
                 @click="modals.filter = true"
             >
@@ -43,7 +43,7 @@
             </button>
 
             <div class="grow"></div>
-            <b>Used Storage:</b>
+            <b class="hidden lg:block">Used Storage:</b>
             <span>{{ usedStorage }}</span>
         </div>
 
@@ -106,19 +106,22 @@
                 :type="query.type"
             />
 
-            <div class="grow"></div>
+            <div class="hidden lg:block grow"></div>
 
             <PageScrollItem
                 :page="parseInt(query.page)"
                 :disabled="deleteMode"
+                :mobile="false"
                 @clicked="(n) => (query.page = String(n))"
             />
         </div>
 
+        <div class="divider lg:hidden"></div>
+
         <Loading v-if="loading" :loading="loading" />
         <div v-else class="flex flex-wrap items-center justify-center">
             <table v-if="!nothingFound" class="table w-full">
-                <thead>
+                <thead class="hidden lg:table-header-group">
                     <tr>
                         <th v-if="deleteMode">Delete</th>
                         <th>Image</th>
@@ -134,7 +137,7 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="mobile-filelist grid lg:table-row-group">
                     <FileListItem
                         v-for="d in data"
                         :key="d.id"
@@ -146,6 +149,18 @@
                 </tbody>
             </table>
             <h1 v-else class="card-title text-5xl mb-10">Nothing Found!</h1>
+        </div>
+
+        <div class="my-4">
+            <div class="divider lg:hidden"></div>
+            <div class="flex">
+                <PageScrollItem
+                    :page="parseInt(query.page)"
+                    :disabled="deleteMode"
+                    :mobile="true"
+                    @clicked="(n) => (query.page = String(n))"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -176,7 +191,6 @@ import Loading from "@/components/LoadingItem.vue";
 
 import Swal from "sweetalert2";
 
-// TODO: Mobile CSS
 // TODO: Improve DisplayOrderItem
 
 const auth = useAuthStore();

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lg:block hidden">
         <span>{{ total }}</span> | <span>Order: {{ order }}</span> |
         <span>Listing: {{ listing }}</span> |
         <span>Type: {{ type || "Any" }}</span>

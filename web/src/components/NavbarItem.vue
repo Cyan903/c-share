@@ -139,9 +139,8 @@ const logout = () => {
 </script>
 
 <style scoped>
-/* TODO: Improve this!!! */
 .router-link-exact-active:not(.logo) {
-    color: red;
+    color: rgba(255, 255, 255, 0.1);
 }
 
 .navbar * {

@@ -1,11 +1,32 @@
 <template>
-    <tr>
+    <tr class="hidden lg:table-row">
         <ModalItem :show="modal" @hide="modal = false">
             <h3 class="font-semibold text-2xl mb-6 text-center">
                 File Details
             </h3>
 
             <FileViewItem :id="data.id" :type="data.file_type" />
+            <div class="lg:hidden text-center">
+                <h5 class="font-semibold text-xl">ID: {{ data.id }}</h5>
+                <div class="text-sm my-1 opacity-50">
+                    <b>{{ data.file_type }}</b>
+
+                    <span
+                        class="text-sm opacity-50 my-1"
+                        :title="data.created_at"
+                    >
+                        | {{ date }}
+                    </span>
+                </div>
+
+                <div
+                    class="badge badge-ghost badge-sm"
+                    :title="`${data.file_size} bytes`"
+                >
+                    {{ fileSize }}
+                </div>
+            </div>
+
             <div class="divider"></div>
             <Loading :loading="loading" />
 
@@ -108,6 +129,30 @@
                 Details
             </button>
         </th>
+    </tr>
+    <tr class="lg:hidden block file-item-mobile">
+        <Loading :loading="loading" />
+        <div class="avatar mask mask-squircle w-20">
+            <FileViewItem :id="data.id" :type="data.file_type" :small="true" />
+        </div>
+
+        <div class="avatar-overlay">
+            <div v-if="deleteMode">
+                <input
+                    ref="deleteCheckbox"
+                    type="checkbox"
+                    class="checkbox"
+                    :checked="selected"
+                    @click="updateSelect"
+                />
+            </div>
+
+            <button
+                class="rounded-box"
+                :disabled="deleteMode"
+                @click="modal = true"
+            ></button>
+        </div>
     </tr>
 </template>
 

@@ -66,7 +66,7 @@ onMounted(() => {
 
     if (props.small) {
         fileType.value = "image";
-        source.value = "favicon.ico";
+        source.value = "/ico/folder.png";
     }
 });
 
