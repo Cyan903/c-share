@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Cyan903/c-share/internal/cache"
 	"github.com/Cyan903/c-share/internal/database"
 	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/config"
@@ -55,7 +56,7 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 // Dev mode only
 func ServerFiles(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
-	json := api.AdvancedResponse{Writer: w}
+	jsonResponse := api.AdvancedResponse{Writer: w}
 
 	if config.Data.Mode != "development" {
 		response.NotFound("Route not found!")
@@ -69,9 +70,49 @@ func ServerFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.Code = 200
-	json.Count = 3
-	json.Data = info
+	jsonResponse.Code = 200
+	jsonResponse.Count = 3
+	jsonResponse.Data = info
 
-	json.JSON()
+	jsonResponse.JSON()
+}
+
+// Ok to expose to public
+func ServerStats(w http.ResponseWriter, r *http.Request) {
+	response := api.SimpleResponse{Writer: w}
+	jsonResponse := api.AdvancedResponse{Writer: w}
+
+	statsCache, success, err := cache.GetServerInfo()
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if success {
+		jsonResponse.Code = 200
+		jsonResponse.Count = 3
+		jsonResponse.Data = statsCache
+
+		jsonResponse.JSON()
+		return
+	}
+
+	stats, err := database.ServerStatsInfo()
+
+	if err != nil {
+		response.InternalError()
+		return
+	}
+
+	if err := cache.SaveServerStats(stats.Users, stats.Storage, stats.Total); err != nil {
+		response.InternalError()
+		return
+	}
+
+	jsonResponse.Code = 200
+	jsonResponse.Count = 3
+	jsonResponse.Data = stats
+
+	jsonResponse.JSON()
 }

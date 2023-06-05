@@ -9,6 +9,7 @@ import (
 )
 
 const EMAIL_EXPIRE = 2 * time.Hour
+const STATS_EXPIRE = 4 * time.Hour
 
 var Conn *redis.Client
 

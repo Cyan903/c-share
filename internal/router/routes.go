@@ -14,12 +14,12 @@ import (
 func routes() http.Handler {
 	mux := chi.NewRouter()
 
-	info := httprate.Limit(10, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
-	auth := httprate.Limit(15, 10*time.Minute, httprate.WithLimitHandler(RateLimit))
-	email := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
-	reset := httprate.Limit(10, 5*time.Minute, httprate.WithLimitHandler(RateLimit))
+	info := httprate.Limit(10, 10*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
+	auth := httprate.Limit(15, 10*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
+	email := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
+	reset := httprate.Limit(10, 5*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
 
-	mux.Use(httprate.Limit(250, 1*time.Minute, httprate.WithLimitHandler(RateLimit)))
+	mux.Use(httprate.Limit(250, 1*time.Minute, httprate.WithLimitHandler(handlers.RateLimit)))
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   config.Data.CorsAllow,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -56,6 +56,10 @@ func routes() http.Handler {
 
 	mux.Get("/f", handlers.ServerFiles)
 	mux.Get("/f/{id}", handlers.GetFile)
+
+	mux.Get("/", handlers.ServerStats)
+	mux.NotFound(handlers.NotFound)
+	mux.MethodNotAllowed(handlers.MethodNotAllowed)
 
 	return mux
 }
