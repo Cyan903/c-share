@@ -3,6 +3,20 @@
 @import "./pages/me.css";
 @import "./pages/profile.css";
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
 #app {
     font-family: Arial, Helvetica, sans-serif;
+    min-height: calc(100% - 100px);
 }
+
+footer {
+    position: relative;
+    height: 100px;
+    clear: both;
+}
+

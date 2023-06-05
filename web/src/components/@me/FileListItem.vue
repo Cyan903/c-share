@@ -75,7 +75,7 @@
                 type="checkbox"
                 class="checkbox"
                 :checked="selected"
-                @click="updateSelect"
+                @input="updateSelect"
             />
         </td>
 
@@ -139,11 +139,11 @@
         <div class="avatar-overlay">
             <div v-if="deleteMode">
                 <input
-                    ref="deleteCheckbox"
+                    ref="deleteCheckboxMobile"
                     type="checkbox"
                     class="checkbox"
                     :checked="selected"
-                    @click="updateSelect"
+                    @click="updateSelectMobile"
                 />
             </div>
 
@@ -177,10 +177,12 @@ import Loading from "@/components/LoadingItem.vue";
 import moment from "moment";
 import Swal from "sweetalert2";
 
-const deleteCheckbox = ref<HTMLInputElement>();
 const modal = ref(false);
 const loading = ref(false);
 const selected = ref(false);
+
+const deleteCheckbox = ref<HTMLInputElement>();
+const deleteCheckboxMobile = ref<HTMLInputElement>();
 
 const edit = reactive({
     password: "",
@@ -273,6 +275,13 @@ const updateSelect = () => {
     if (!deleteCheckbox.value) return;
 
     selected.value = deleteCheckbox.value.checked;
+    emit("updatePurgeList", props.data.id, !selected.value);
+};
+
+const updateSelectMobile = () => {
+    if (!deleteCheckboxMobile.value) return;
+
+    selected.value = deleteCheckboxMobile.value.checked;
     emit("updatePurgeList", props.data.id, !selected.value);
 };
 

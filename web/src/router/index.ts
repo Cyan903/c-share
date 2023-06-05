@@ -32,7 +32,7 @@ const router = createRouter({
 router.beforeEach((to) => {
     const storage = localStorage.getItem("token");
 
-    document.title = `${to.meta.title} | ${import.meta.env.VITE_APP}`;
+    document.title = `${to.meta.title} | ${import.meta.env.VITE_APP || "c-share"}`;
 
     // Cannot be logged in
     if (to.meta.requiresNoAuth && storage) {
