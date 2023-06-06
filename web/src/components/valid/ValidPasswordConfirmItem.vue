@@ -39,7 +39,11 @@ const updateText = (evt: Event) => {
     emit("update:modelValue", (evt.target as HTMLInputElement).value);
 };
 
-const valid = computed(() => useValidPassword(toRef(props.modelValue)) && props.modelValue == props.check);
+const valid = computed(
+    () =>
+        useValidPassword(toRef(props.modelValue)) &&
+        props.modelValue == props.check
+);
 const why = () => {
     Swal.fire({
         title: "Passwords must match!",

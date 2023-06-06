@@ -29,7 +29,7 @@
                         </router-link>
 
                         <router-link
-                            class="btn btn-secondary sm:mx-4 sm:w-auto w-full"
+                            class="btn btn-secondary mx-0 sm:mx-4 sm:w-auto w-full"
                             to="/about"
                         >
                             Documentation
@@ -44,7 +44,7 @@
                         </router-link>
 
                         <router-link
-                            class="btn btn-secondary mx-4 sm:mx-4 sm:w-auto w-full"
+                            class="btn btn-secondary mx-0 sm:mx-4 sm:w-auto w-full"
                             to="/@me/profile/email"
                         >
                             Settings

@@ -1,7 +1,7 @@
 <template>
     <div>
         <Loading :loading="loading" />
-        
+
         <h2 class="font-semibold text-3xl my-4">Nickname Settings</h2>
         <p class="mx-4 my-3">
             Must be between 4 and 10 characters. Cannot use numbers or special

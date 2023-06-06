@@ -7,7 +7,12 @@
 
             <FileViewItem :id="data.id" :type="data.file_type" />
             <div class="lg:hidden text-center">
-                <h5 class="font-semibold text-xl hover:opacity-70" @click="copyID">ID: {{ data.id }}</h5>
+                <h5
+                    class="font-semibold text-xl hover:opacity-70"
+                    @click="copyID"
+                >
+                    ID: {{ data.id }}
+                </h5>
                 <div class="text-sm my-1 opacity-50">
                     <b>{{ data.file_type }}</b>
 

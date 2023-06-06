@@ -9,11 +9,7 @@
             @input="updateText"
         />
 
-        <button
-            @click.prevent="why"
-            :disabled="valid"
-            class="btn btn-error"
-        >
+        <button @click.prevent="why" :disabled="valid" class="btn btn-error">
             ?
         </button>
     </label>

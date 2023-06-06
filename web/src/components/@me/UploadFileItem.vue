@@ -31,7 +31,11 @@
             <ValidCommentItem v-model="upload.comment" />
         </div>
 
-        <button class="block my-3 m-auto btn btn-primary" :disabled="!valid" @click="uploadFile">
+        <button
+            class="block my-3 m-auto btn btn-primary"
+            :disabled="!valid"
+            @click="uploadFile"
+        >
             Upload
         </button>
     </div>
