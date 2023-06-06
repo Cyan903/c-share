@@ -64,6 +64,7 @@
             <div
                 class="collapse collapse-arrow bg-base-300 mb-4"
                 @click="toggleOpen"
+                v-if="source"
             >
                 <div class="collapse-title text-xl font-medium">
                     Is this open source?

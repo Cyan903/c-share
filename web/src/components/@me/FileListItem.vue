@@ -7,7 +7,7 @@
 
             <FileViewItem :id="data.id" :type="data.file_type" />
             <div class="lg:hidden text-center">
-                <h5 class="font-semibold text-xl">ID: {{ data.id }}</h5>
+                <h5 class="font-semibold text-xl hover:opacity-70" @click="copyID">ID: {{ data.id }}</h5>
                 <div class="text-sm my-1 opacity-50">
                     <b>{{ data.file_type }}</b>
 
@@ -91,7 +91,9 @@
                     </div>
                 </div>
                 <div>
-                    <div class="font-bold">{{ data.id }}</div>
+                    <div class="font-bold hover:opacity-70" @click="copyID">
+                        {{ data.id }}
+                    </div>
                     <div class="text-sm opacity-50" :title="data.created_at">
                         {{ date }}
                     </div>
@@ -158,6 +160,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, toRef } from "vue";
+import { useToast } from "vue-toastification";
 import type {
     FileEditUpdate,
     FileUpdate,
@@ -184,6 +187,7 @@ const selected = ref(false);
 const deleteCheckbox = ref<HTMLInputElement>();
 const deleteCheckboxMobile = ref<HTMLInputElement>();
 
+const toast = useToast();
 const edit = reactive({
     password: "",
     comment: "",
@@ -269,6 +273,18 @@ const updateFile = async () => {
         comment: edit.comment,
         perm: edit.perm,
     });
+};
+
+const copyID = () => {
+    navigator.clipboard.writeText(props.data.id).then(
+        () => {
+            toast.success(`Copied ${props.data.id} to clipboard`);
+        },
+        (err) => {
+            console.warn(`[copyID] could not copy id to clipboard, ${err}`);
+            toast.error(`Could not copy ${props.data.id} to clipboard`);
+        }
+    );
 };
 
 const updateSelect = () => {

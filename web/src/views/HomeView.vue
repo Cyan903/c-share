@@ -83,7 +83,7 @@
             </div>
 
             <h4 class="text-base-content font-bold my-4 text-sm opacity-70">
-                <a :href="appSource" target="_blank">Powered by {{ appName }}</a>
+                <a :href="appSource">Powered by {{ appName }}</a>
             </h4>
         </div>
     </div>
@@ -100,7 +100,7 @@ import Swal from "sweetalert2";
 
 const auth = useAuthStore();
 const appName = computed(() => import.meta.env.VITE_APP || "c-share");
-const appSource = computed(() => import.meta.env.VITE_SOURCE || "c-share");
+const appSource = computed(() => import.meta.env.VITE_SOURCE || "#");
 
 const data = reactive({
     storage: "0",
