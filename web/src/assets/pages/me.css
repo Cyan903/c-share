@@ -78,7 +78,6 @@ dialog {
     background-image: url("/ico/pencil.png");
     background-position: center;
     background-repeat: no-repeat;
-    background-size: contain;
     background-size: 1.5rem;
     transition: opacity 0.3s ease-in-out;
 }

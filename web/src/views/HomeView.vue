@@ -3,8 +3,8 @@
         <div class="hero bg-base-200 relative bottom-2">
             <div class="hero-content flex-col lg:flex-row">
                 <img
-                    src="/assets/landing.jpg"
-                    class="max-w-sm rounded-lg hidden lg:block shadow-2xl"
+                    src="/assets/landing.png"
+                    class="max-w-sm rounded-lg hidden lg:block "
                 />
                 <div>
                     <h1 class="sm:text-5xl text-4xl font-bold">

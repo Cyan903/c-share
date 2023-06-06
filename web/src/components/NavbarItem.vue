@@ -60,10 +60,10 @@
             </div>
 
             <router-link
-                class="logo btn btn-ghost normal-case text-xl"
+                class="logo btn btn-ghost p-0 h-full"
                 :to="auth.isLoggedIn ? '/@me' : '/'"
             >
-                {{ appName }}
+                <img src="/logo/header-1.png" width="150" />
             </router-link>
         </div>
         <div class="flex-none">
@@ -119,14 +119,12 @@
 <script lang="ts" setup>
 import { useAuthStore } from "@/stores/auth";
 import { RouterLink, useRouter } from "vue-router";
-import { computed } from "vue";
 
 import Swal from "sweetalert2";
 
 const router = useRouter();
 const auth = useAuthStore();
 
-const appName = computed(() => import.meta.env.VITE_APP || "c-share");
 const logout = () => {
     Swal.fire({
         title: "Are you sure you want to logout?",
