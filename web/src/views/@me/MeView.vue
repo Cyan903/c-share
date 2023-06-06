@@ -118,8 +118,7 @@
 
         <div class="divider lg:hidden"></div>
 
-        <Loading v-if="loading" :loading="loading" />
-        <div v-else class="flex flex-wrap items-center justify-center">
+        <div class="flex flex-wrap items-center justify-center">
             <table v-if="!nothingFound" class="table w-full">
                 <thead class="hidden lg:table-header-group">
                     <tr>
@@ -138,7 +137,9 @@
                     </tr>
                 </thead>
                 <tbody class="mobile-filelist grid lg:table-row-group">
+                    <LoadingFileItem v-if="loading" :loading="loading" />
                     <FileListItem
+                        v-else
                         v-for="d in data"
                         :key="d.id"
                         :data="d"
@@ -186,12 +187,10 @@ import DisplayOrderItem from "@/components/@me/DisplayOrderItem.vue";
 import FileListItem from "@/components/@me/FileListItem.vue";
 
 import DelayedInputItem from "@/components/@me/util/DelayedInputItem.vue";
+import LoadingFileItem from "@/components/loading/LoadingFileItem.vue";
 import ModalItem from "@/components/@me/util/ModalItem.vue";
-import Loading from "@/components/LoadingItem.vue";
 
 import Swal from "sweetalert2";
-
-// TODO: Improve DisplayOrderItem
 
 const auth = useAuthStore();
 const data = ref(Array<FileListingData>(0));

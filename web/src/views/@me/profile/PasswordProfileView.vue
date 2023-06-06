@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Loading :loading="loading" />
+        <LoadingAuthItem :loading="loading" />
         <div>
             <h2 class="font-semibold text-3xl my-4">Password Settings</h2>
             <EmailStatusItem />
@@ -56,8 +56,8 @@ import type { PasswordUpdate } from "@/types/api/@me/profile";
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
 
-import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const loading = ref(false);

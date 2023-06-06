@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Loading :loading="loading" />
+        <LoadingAuthItem :loading="loading" />
 
         <h2 class="font-semibold text-3xl my-4">Nickname Settings</h2>
         <p class="mx-4 my-3">
@@ -31,7 +31,8 @@ import { useValidNickname } from "@/use/useValidate";
 import type { NicknameUpdate } from "@/types/api/@me/profile";
 
 import ValidNicknameItem from "@/components/valid/ValidNicknameItem.vue";
-import Loading from "@/components/LoadingItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
+
 import Swal from "sweetalert2";
 
 const auth = useAuthStore();

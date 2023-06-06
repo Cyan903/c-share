@@ -33,7 +33,7 @@
             </div>
 
             <div class="divider"></div>
-            <Loading :loading="loading" />
+            <LoadingFileViewItemVue :loading="loading" />
 
             <div class="file-list-form text-center">
                 <ValidPasswordItem
@@ -138,7 +138,6 @@
         </th>
     </tr>
     <tr class="lg:hidden block file-item-mobile">
-        <Loading :loading="loading" />
         <div class="avatar mask mask-squircle w-20">
             <FileViewItem :id="data.id" :type="data.file_type" :small="true" />
         </div>
@@ -180,7 +179,7 @@ import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 import ValidCommentItem from "@/components/valid/ValidCommentItem.vue";
 import ModalItem from "@/components/@me/util/ModalItem.vue";
 import FileViewItem from "@/components/@me/util/FileViewItem.vue";
-import Loading from "@/components/LoadingItem.vue";
+import LoadingFileViewItemVue from "@/components/loading/LoadingFileViewItem.vue";
 
 import moment from "moment";
 import Swal from "sweetalert2";

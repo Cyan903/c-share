@@ -1,7 +1,7 @@
 <template>
     <footer class="footer items-center p-4 bg-base-300">
         <div class="items-center grid-flow-col">
-            <img src="/assets/footer-icon.png" width="35" height="35" />
+            <img src="/assets/footer.png" width="35" height="35" />
             <p>{{ appName }} - fast & efficient file hosting</p>
         </div>
         <div

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Loading :loading="loading" />
+        <LoadingAuthItem :loading="loading" />
         <h2 class="font-semibold text-3xl my-4">Email Settings</h2>
 
         <div class="my-2">
@@ -57,7 +57,8 @@ import type { EmailUpdate, EmailSendVerify } from "@/types/api/@me/profile";
 
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
 import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
-import Loading from "@/components/LoadingItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
+
 import Swal from "sweetalert2";
 
 const auth = useAuthStore();

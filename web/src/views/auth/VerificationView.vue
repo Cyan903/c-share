@@ -1,6 +1,6 @@
 <template>
     <div class="auth-form flex flex-wrap items-center justify-center">
-        <Loading :loading="loading" />
+        <LoadingAuthItem :loading="loading" />
 
         <div class="card card-normal bg-base-300 shadow-xl">
             <div class="card-body items-center text-center">
@@ -34,8 +34,8 @@ import type { ResetToken } from "@/types/api/auth";
 
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
 
-import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const password = ref("");
