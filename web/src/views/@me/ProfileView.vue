@@ -63,9 +63,3 @@ const active = (n: string) => {
     return location.href.split("/").includes(n);
 };
 </script>
-
-<style scoped>
-ul a.router-link-exact-active {
-    color: green;
-}
-</style>

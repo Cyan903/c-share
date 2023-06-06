@@ -14,6 +14,10 @@
                     :check="password"
                 />
 
+                <router-link class="link link-info" to="/auth/login">
+                    Already have an account?
+                </router-link>
+
                 <input
                     class="btn btn-primary w-5/6 my-4"
                     :disabled="!valid"

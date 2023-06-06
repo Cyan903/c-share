@@ -1,5 +1,5 @@
 <template>
-    <footer class="footer items-center p-4 bg-neutral text-neutral-content">
+    <footer class="footer items-center p-4 bg-base-300">
         <div class="items-center grid-flow-col">
             <svg
                 width="36"
@@ -31,12 +31,6 @@
         </div>
     </footer>
 </template>
-
-<style>
-body.swal2-height-auto {
-    height: 100% !important;
-}
-</style>
 
 <script lang="ts" setup>
 import { computed } from "vue";
