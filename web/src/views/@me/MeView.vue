@@ -104,6 +104,7 @@
                 :order="query.order"
                 :listing="query.listing"
                 :type="query.type"
+                @resetFilter="(filter, value: string) => {query[filter] = value; query.page = String(0)}"
             />
 
             <div class="hidden lg:block grow"></div>

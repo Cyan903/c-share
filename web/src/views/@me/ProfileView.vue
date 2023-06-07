@@ -5,7 +5,11 @@
             <div class="auth-form flex flex-wrap items-center justify-center">
                 <div class="card card-normal bg-base-300 shadow-xl">
                     <div class="card-body items-center text-center">
-                        <RouterView />
+                        <router-view v-slot="{ Component }">
+                            <transition name="router" mode="out-in">
+                                <component :is="Component"></component>
+                            </transition>
+                        </router-view>
                     </div>
 
                     <label
@@ -63,3 +67,13 @@ const active = (n: string) => {
     return location.href.split("/").includes(n);
 };
 </script>
+
+<style scoped>
+.router-enter-from {
+    opacity: 0;
+}
+
+.router-enter-active {
+    transition: all 0.2s ease-in-out;
+}
+</style>
