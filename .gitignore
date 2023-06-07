@@ -1,5 +1,6 @@
 # Builds
-/bin
+/bin/*
+!/bin/.gitkeep
 
 # Private
 config.yaml
