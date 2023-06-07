@@ -118,7 +118,6 @@
         </div>
 
         <div class="divider lg:hidden"></div>
-
         <div class="flex flex-wrap items-center justify-center">
             <table v-if="!nothingFound" class="table w-full">
                 <thead class="hidden lg:table-header-group">
