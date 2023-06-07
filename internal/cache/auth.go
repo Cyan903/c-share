@@ -46,4 +46,3 @@ func DeleteResetToken(token string) error {
 
 	return nil
 }
-

@@ -5,6 +5,10 @@ build:
 	${MAKE} build-api
 	${MAKE} build-web
 
+format:
+	go fmt ./...
+	cd web && npm run format
+
 # dev
 dev-api:
 	go run cmd/c-share/*.go

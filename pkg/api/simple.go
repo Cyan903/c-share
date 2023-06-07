@@ -79,4 +79,3 @@ func (s *SimpleResponse) Success(msg string) {
 
 	s.JSON()
 }
-

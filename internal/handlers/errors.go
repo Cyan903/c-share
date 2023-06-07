@@ -14,10 +14,10 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 
 func RateLimit(w http.ResponseWriter, r *http.Request) {
 	response := api.SimpleResponse{Writer: w}
-	
+
 	response.Code = http.StatusTooManyRequests
 	response.Message = "Too many requests!"
-	
+
 	response.JSON()
 }
 
