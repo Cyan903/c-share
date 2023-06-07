@@ -1,21 +1,23 @@
 <template>
-    <div>
+    <label class="input-group">
         <input
-            type="password"
             :value="modelValue"
             :disabled="disabled"
-            @input="updateText"
             :placeholder="placehold || 'Password'"
+            :class="{ 'input-error': !valid && !disabled }"
+            type="password"
+            class="input input-bordered"
+            @input="updateText"
         />
 
         <button
-            :class="{ invalid: !valid && !disabled }"
             @click.prevent="why"
             :disabled="valid || disabled"
+            class="btn btn-error"
         >
             ?
         </button>
-    </div>
+    </label>
 </template>
 
 <script lang="ts" setup>

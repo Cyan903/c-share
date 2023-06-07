@@ -1,24 +1,32 @@
 <template>
-    <div>
-        <Loading :loading="loading" />
+    <div class="auth-form flex flex-wrap items-center justify-center">
+        <LoadingAuthItem :loading="loading" />
 
-        <h1>Register</h1>
-        <form>
-            <ValidNicknameItem v-model="nick" />
-            <ValidEmailItem v-model="email" />
-            <ValidPasswordItem v-model="password" />
-            <ValidPasswordConfirmItem
-                v-model="passwordConfirm"
-                :check="password"
-            />
+        <div class="card card-normal bg-base-300 shadow-xl">
+            <div class="card-body items-center text-center">
+                <h2 class="card-title text-3xl">Register</h2>
 
-            <input
-                :disabled="!valid"
-                type="submit"
-                value="Submit"
-                @click.prevent="register"
-            />
-        </form>
+                <ValidNicknameItem v-model="nick" />
+                <ValidEmailItem v-model="email" />
+                <ValidPasswordItem v-model="password" />
+                <ValidPasswordConfirmItem
+                    v-model="passwordConfirm"
+                    :check="password"
+                />
+
+                <router-link class="link link-info" to="/auth/login">
+                    Already have an account?
+                </router-link>
+
+                <input
+                    class="btn btn-primary w-5/6 my-4"
+                    :disabled="!valid"
+                    type="submit"
+                    value="Register"
+                    @click.prevent="register"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -35,12 +43,12 @@ import ValidNicknameItem from "@/components/valid/ValidNicknameItem.vue";
 import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
 
 import { useRequest } from "@/use/useAPI";
 import { useAuthStore } from "@/stores/auth";
 import type { Register } from "@/types/api/auth";
 
-import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const router = useRouter();
@@ -86,6 +94,8 @@ const register = async () => {
 
         email.value = "";
         password.value = "";
+        passwordConfirm.value = "";
+
         return;
     }
 

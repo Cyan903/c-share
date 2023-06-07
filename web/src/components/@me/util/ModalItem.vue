@@ -1,12 +1,22 @@
 <template>
     <teleport to="#modal">
-        <div v-if="show">
-            <div class="modal-background" @click="$emit('hide')"></div>
-            <div class="modal-content">
-                <button class="modal-close" @click="$emit('hide')">x</button>
+        <div v-if="show" class="modal-background" @click="$emit('hide')"></div>
+        <dialog class="modal w-11/12 max-w-2xl" :class="{ 'modal-open': show }">
+            <div v-if="show" class="modal-box">
+                <button
+                    @click="$emit('hide')"
+                    class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                >
+                    ✕
+                </button>
+
                 <slot></slot>
+
+                <div class="modal-action">
+                    <button @click="$emit('hide')" class="btn">Close</button>
+                </div>
             </div>
-        </div>
+        </dialog>
     </teleport>
 </template>
 
@@ -28,29 +38,7 @@ onUnmounted(() => window.removeEventListener("keydown", escape));
 </script>
 
 <style scoped>
-.modal-background {
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-}
-
-.modal-content {
-    background-color: #fff;
-    max-width: 40vw;
-    max-height: 80vh;
-    padding: 1em;
-    position: fixed;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
-    top: 10vh;
-    overflow-y: scroll;
-}
-
-.modal-close {
-    float: right;
+.c-modal {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

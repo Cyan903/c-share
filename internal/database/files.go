@@ -36,6 +36,12 @@ type StorageInfo struct {
 	} `json:"files"`
 }
 
+type ServerInfo struct {
+	Users   int    `json:"users"`
+	Storage string `json:"storage"`
+	Total   int    `json:"total_files"`
+}
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -285,4 +291,30 @@ func ServerStorageInfo() (StorageInfo, error) {
 	}
 
 	return sinfo, nil
+}
+
+func ServerStatsInfo() (ServerInfo, error) {
+	var sstats ServerInfo
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, `
+		SELECT
+			COUNT(1) AS users,
+			SUM(used_storage) AS storage,
+			(SELECT COUNT(1) FROM files) AS total_files
+		FROM users;
+	`)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&sstats.Users,
+		&sstats.Storage,
+		&sstats.Total,
+	); err != nil {
+		log.Error.Println("Error fetching server stats -", err)
+		return sstats, err
+	}
+
+	return sstats, nil
 }

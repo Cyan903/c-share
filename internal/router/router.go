@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/log"
 )
 
@@ -21,8 +20,4 @@ func Serve(port int) error {
 
 	log.Info.Printf("Running on :%d", port)
 	return srv.ListenAndServe()
-}
-
-func RateLimit(w http.ResponseWriter, r *http.Request) {
-	(&api.SimpleResponse{Writer: w}).TooManyRequests()
 }

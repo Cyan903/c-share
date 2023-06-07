@@ -1,0 +1,21 @@
+/* sweetalert overwrites */
+body.swal2-height-auto {
+    height: 100% !important;
+}
+
+.swal2-popup {
+    background-color: hsl(var(--b2, var(--b1)) / var(--tw-bg-opacity));
+    color: #fff;
+}
+
+.swal2-confirm {
+    border: none !important;
+    background-color: hsl(var(--p) / var(--tw-bg-opacity)) !important;
+}
+
+.swal2-cancel {
+    border: none !important;
+    background-color: hsl(
+        var(--sf, var(--s)) / var(--tw-bg-opacity)
+    ) !important;
+}

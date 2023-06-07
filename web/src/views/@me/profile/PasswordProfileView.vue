@@ -1,16 +1,21 @@
 <template>
     <div>
-        <Loading :loading="loading" />
-        <EmailStatusItem />
+        <LoadingAuthItem :loading="loading" />
+        <div>
+            <h2 class="font-semibold text-3xl my-4">Password Settings</h2>
+            <EmailStatusItem />
 
-        <h2>Password Change</h2>
-        <p v-if="!auth.userData.emailVerified">
-            Your email must be verified in order to change your password. You
-            can send a verification code
-            <router-link to="/@me/profile/email">here</router-link>.
-        </p>
+            <p v-if="!auth.userData.emailVerified" class="mb-4">
+                Your email must be verified in order to change your password.
+                You can send a verification code
+                <router-link to="/@me/profile/email">here</router-link>.
+            </p>
+            <p v-else class="m-4">
+                Your email is verified! You may change your password.
+            </p>
+        </div>
 
-        <form>
+        <form class="profile-inputs">
             <ValidPasswordItem
                 v-model="pw.old"
                 :disabled="!auth.userData.emailVerified"
@@ -30,9 +35,10 @@
             />
 
             <input
-                type="submit"
-                value="Update"
                 :disabled="!valid"
+                type="submit"
+                value="Update Password"
+                class="btn btn-primary btn-outline mt-4"
                 @click.prevent="updatePassword"
             />
         </form>
@@ -50,8 +56,8 @@ import type { PasswordUpdate } from "@/types/api/@me/profile";
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
 import ValidPasswordConfirmItem from "@/components/valid/ValidPasswordConfirmItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
 
-import Loading from "@/components/LoadingItem.vue";
 import Swal from "sweetalert2";
 
 const loading = ref(false);

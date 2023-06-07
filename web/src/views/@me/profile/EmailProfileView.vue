@@ -1,41 +1,45 @@
 <template>
     <div>
-        <Loading :loading="loading" />
-        <EmailStatusItem />
+        <LoadingAuthItem :loading="loading" />
+        <h2 class="font-semibold text-3xl my-4">Email Settings</h2>
 
-        <h1>Email</h1>
-        <form>
+        <div class="my-2">
+            <EmailStatusItem />
             <ValidEmailItem
                 v-model="email"
                 :disabled="!auth.userData.emailVerified"
             />
 
             <input
-                :disabled="!valid"
                 type="submit"
                 value="Update Email"
+                class="btn btn-primary my-2 btn-outline"
+                :disabled="!valid"
                 @click.prevent="updateEmail"
             />
-        </form>
+        </div>
 
-        <hr />
-
-        <div>
-            <h3>Email Verification</h3>
-            <p>
+        <div class="divider"></div>
+        <div class="my-2">
+            <h2 class="font-semibold text-3xl my-4">Email Verification</h2>
+            <p class="text-left mx-5">
                 You cannot change your email address or reset your password if
                 your email is not verified. It is highly recommended that you
                 verify your email.
             </p>
 
-            <p v-if="auth.userData.emailVerified">
+            <p
+                class="text-left mx-5 my-4 text-success"
+                v-if="auth.userData.emailVerified"
+            >
                 Hooray! Your email is already verified! Please note that
                 changing it will reset your verification.
             </p>
 
             <button
-                @click="sendVerification"
+                class="btn btn-primary my-2 relative top-4 btn-outline"
                 :disabled="auth.userData.emailVerified"
+                @click="sendVerification"
             >
                 Send Verification Email
             </button>
@@ -52,16 +56,20 @@ import { useRequest } from "@/use/useAPI";
 import type { EmailUpdate, EmailSendVerify } from "@/types/api/@me/profile";
 
 import EmailStatusItem from "@/components/profile/EmailStatusItem.vue";
-import Loading from "@/components/LoadingItem.vue";
-import Swal from "sweetalert2";
 import ValidEmailItem from "@/components/valid/ValidEmailItem.vue";
+import LoadingAuthItem from "@/components/loading/LoadingAuthItem.vue";
+
+import Swal from "sweetalert2";
 
 const auth = useAuthStore();
 const loading = ref(false);
 const email = ref("");
 
 const valid = computed(
-    () => useValidEmail(email) && auth.userData.emailVerified
+    () =>
+        useValidEmail(email) &&
+        auth.userData.emailVerified &&
+        auth.userData.email != email.value
 );
 
 const updateEmail = async () => {
