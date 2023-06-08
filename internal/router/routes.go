@@ -29,6 +29,9 @@ func routes() http.Handler {
 		MaxAge:           300,
 	}))
 
+	// Server stats
+	mux.Get("/", handlers.ServerStats)
+
 	mux.Route("/@me", func(r chi.Router) {
 		r.Use(handlers.TokenCheck)
 		r.Get("/", handlers.WhoAmI)
@@ -45,6 +48,7 @@ func routes() http.Handler {
 		r.With(email).Post("/profile/verify", handlers.SendVerification)
 		r.With(email).Post("/profile/{id}", handlers.VerifyEmail)
 
+		// Private API
 		r.Route("/api", func(rm chi.Router) {
 			rm.Use(handlers.APIEmailCheck)
 
@@ -57,14 +61,19 @@ func routes() http.Handler {
 		r.Delete("/upload", handlers.DeleteUpload)
 	})
 
+	// Public API
+	mux.Route("/api", func(r chi.Router) {
+		r.Use(handlers.APITokenCheck)
+
+		r.Post("/upload", handlers.UploadFileToken)
+		r.Delete("/upload", handlers.DeleteFilesToken)
+	})
+
 	mux.With(auth).Post("/auth/register", handlers.Register)
 	mux.With(auth).Post("/auth/login", handlers.Login)
 
 	mux.With(reset).Post("/auth/pwreset", handlers.SendPasswordReset)
 	mux.With(reset).Post("/auth/{id}", handlers.ResetPassword)
-
-	mux.Get("/", handlers.ServerStats)
-	mux.Post("/f", handlers.UploadFileToken) // API key required
 
 	mux.Get("/f", handlers.ServerFiles)
 	mux.Get("/f/{id}", handlers.GetFile)

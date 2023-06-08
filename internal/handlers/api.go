@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Cyan903/c-share/internal/database"
@@ -104,4 +105,59 @@ func RemoveAPIToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success("Token as been removed!")
+}
+
+// Public
+func APITokenCheck(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		response := api.SimpleResponse{Writer: w}
+		token := r.URL.Query().Get("token")
+
+		if token == "" {
+			response.BadRequest("No API token provided!")
+			return
+		}
+
+		// Check token
+		data, err := database.TokenUserData(token)
+
+		if err != nil {
+			response.InternalError()
+			return
+		}
+
+		if data.UserID == "" {
+			response.BadRequest("Invalid token!")
+			return
+		}
+
+		// Check email (probably not necessary but better to be safe)
+		abt, err := database.About(data.UserID)
+
+		if err != nil {
+			response.InternalError()
+			return
+		}
+
+		if abt.EmailVerified == 0 {
+			response.Unauthorized("You must have a verified email to interact with the API!")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), database.APIToken{}, data)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func UploadFileToken(w http.ResponseWriter, r *http.Request) {
+	tokenData := r.Context().Value(database.APIToken{}).(database.APIToken)
+
+	FileUpload(tokenData.UserID, w, r)
+}
+
+func DeleteFilesToken(w http.ResponseWriter, r *http.Request) {
+	tokenData := r.Context().Value(database.APIToken{}).(database.APIToken)
+
+	FileDelete(tokenData.UserID, w, r)
 }

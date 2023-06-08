@@ -34,6 +34,7 @@ export const useAuthStore = defineStore("auth", () => {
         if (user.response.status != 200) {
             console.warn("[auth] Could not login!");
             console.error(user);
+            localStorage.clear();
 
             return false;
         }

@@ -138,9 +138,3 @@ func ServerStats(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse.JSON()
 }
-
-func UploadFileToken(w http.ResponseWriter, r *http.Request) {
-	// Is email verified
-	response := api.SimpleResponse{Writer: w}
-	response.Success("")
-}

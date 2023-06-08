@@ -12,6 +12,7 @@ import (
 
 type APIToken struct {
 	Token     string `json:"token"`
+	UserID    string `json:"user"`
 	CreatedAt string `json:"created_at"`
 }
 
@@ -33,15 +34,36 @@ func UserAPIToken(user string) (APIToken, error) {
 	var key APIToken
 
 	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
-	query := Conn.QueryRowContext(c, "SELECT token, created_at FROM api WHERE user = ?", user)
+	query := Conn.QueryRowContext(c, "SELECT user, token, created_at FROM api WHERE user = ?", user)
 
 	defer cancel()
 
 	if err := query.Scan(
+		&key.UserID,
 		&key.Token,
 		&key.CreatedAt,
 	); err != nil && err != sql.ErrNoRows {
-		log.Error.Println("Could not get API key -", err)
+		log.Error.Println("Could not get API key from user -", err)
+		return key, err
+	}
+
+	return key, nil
+}
+
+func TokenUserData(token string) (APIToken, error) {
+	var key APIToken
+
+	c, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	query := Conn.QueryRowContext(c, "SELECT user, token, created_at FROM api WHERE token = ?", token)
+
+	defer cancel()
+
+	if err := query.Scan(
+		&key.UserID,
+		&key.Token,
+		&key.CreatedAt,
+	); err != nil && err != sql.ErrNoRows {
+		log.Error.Println("Could not get API key from token -", err)
 		return key, err
 	}
 
