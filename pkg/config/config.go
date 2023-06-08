@@ -11,6 +11,7 @@ import (
 type Conf struct {
 	DSN         string   `yaml:"DSN,omitempty"`
 	Port        int      `yaml:"PORT,omitempty"`
+	Name        string   `yaml:"NAME,omitempty"`
 	Mode        string   `yaml:"MODE,omitempty"`
 	JWTSecret   string   `yaml:"SECRET,omitempty"`
 	UploadLimit int64    `yaml:"UPLOAD_LIMIT,omitempty"`

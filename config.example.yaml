@@ -2,6 +2,7 @@ DSN: username:password@tcp(0.0.0.0:3306)/cshare
 PORT: 8081
 
 # https://www.grc.com/passwords.htm
+NAME: c-share
 MODE: development
 SECRET: hello-world
 

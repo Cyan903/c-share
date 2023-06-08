@@ -64,6 +64,15 @@
                 >
                     Save
                 </button>
+
+                <button
+                    class="btn btn-primary m-1"
+                    :disabled="loading"
+                    @click="copyID"
+                >
+                    Copy
+                </button>
+
                 <button
                     class="btn btn-error m-1"
                     :disabled="loading || !valid"
@@ -280,7 +289,7 @@ const updateFile = async () => {
 };
 
 const copyID = () => {
-    navigator.clipboard.writeText(props.data.id).then(
+    navigator.clipboard.writeText(`${import.meta.env.VITE_API}/f/${props.data.id}`).then(
         () => {
             toast.success(`Copied ${props.data.id} to clipboard`);
         },
