@@ -54,6 +54,16 @@
                     </label>
                 </li>
 
+                <li @click="$router.push('/@me/profile/api')">
+                    <label
+                        for="my-drawer"
+                        class="drawer-button"
+                        :class="{ active: active('api') }"
+                    >
+                        API Token
+                    </label>
+                </li>
+
                 <li class="lg:hidden">
                     <label for="my-drawer" class="drawer-button">Close</label>
                 </li>

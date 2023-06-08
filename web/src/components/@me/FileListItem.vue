@@ -289,15 +289,17 @@ const updateFile = async () => {
 };
 
 const copyID = () => {
-    navigator.clipboard.writeText(`${import.meta.env.VITE_API}/f/${props.data.id}`).then(
-        () => {
-            toast.success(`Copied ${props.data.id} to clipboard`);
-        },
-        (err) => {
-            console.warn(`[copyID] could not copy id to clipboard, ${err}`);
-            toast.error(`Could not copy ${props.data.id} to clipboard`);
-        }
-    );
+    navigator.clipboard
+        .writeText(`${import.meta.env.VITE_API}/f/${props.data.id}`)
+        .then(
+            () => {
+                toast.success(`Copied ${props.data.id} to clipboard`);
+            },
+            (err) => {
+                console.warn(`[copyID] could not copy id to clipboard, ${err}`);
+                toast.error(`Could not copy ${props.data.id} to clipboard`);
+            }
+        );
 };
 
 const updateSelect = () => {

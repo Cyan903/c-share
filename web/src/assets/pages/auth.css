@@ -27,7 +27,7 @@
         padding-right: 0 !important;
     }
 
-    .auth-form .btn-error {
+    .auth-form .btn-error:not(.keep-error) {
         display: none !important;
     }
 }
