@@ -239,7 +239,6 @@ func DeleteFiles(uid string, files []string) error {
 	return nil
 }
 
-// TODO: check if user has enough storage left
 func UpdateStorage(uid string) (int64, error) {
 	var storage int64
 
