@@ -127,7 +127,7 @@ func APITokenCheck(next http.Handler) http.Handler {
 		}
 
 		if data.UserID == "" {
-			response.BadRequest("Invalid token!")
+			response.Unauthorized("Invalid token!")
 			return
 		}
 
