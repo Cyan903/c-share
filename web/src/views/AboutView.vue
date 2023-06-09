@@ -214,12 +214,15 @@
                 <div>
                     <h4 class="font-bold text-lg">Request Body</h4>
                     <p>
-                        The request body only contains a JSON array of file IDs to be removed.
+                        The request body only contains a JSON array of file IDs
+                        to be removed.
                     </p>
 
                     <div class="alert my-4">
                         <span>
-                            <code class="rounded bg-base-300 p-1">["abc123", "def456", ...]</code>
+                            <code class="rounded bg-base-300 p-1"
+                                >["abc123", "def456", ...]</code
+                            >
                             - application/json
                         </span>
                     </div>
@@ -231,6 +234,12 @@
                     :code="Delete.code"
                 />
             </div>
+        </div>
+
+        <div v-if="source" class="text-center my-5 mt-10">
+            <a class="link hover:opacity-50 text-sm" :href="source">
+                Further documentation here
+            </a>
         </div>
     </div>
 </template>
