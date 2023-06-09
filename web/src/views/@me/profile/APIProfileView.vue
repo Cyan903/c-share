@@ -6,9 +6,10 @@
             <EmailStatusItem />
 
             <p v-if="!auth.userData.emailVerified" class="link mb-4">
-                Your email must be verified in order to request an API key. You
-                can send a verification code
-                <router-link to="/@me/profile/email">here</router-link>.
+                <router-link to="/@me/profile/email">
+                    Your email must be verified in order to request an API key.
+                    You can send a verification code here.
+                </router-link>
             </p>
             <p v-else class="m-4">
                 Your email is verified! You may request an API key. Be sure to

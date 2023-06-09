@@ -61,7 +61,7 @@
 
             <router-link
                 class="logo btn btn-ghost p-0 h-full"
-                :to="auth.isLoggedIn ? '/@me' : '/'"
+                to="/"
             >
                 <img src="/logo/header-1.png" width="150" />
             </router-link>
