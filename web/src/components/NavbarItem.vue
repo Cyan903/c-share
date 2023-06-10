@@ -30,6 +30,10 @@
                         <router-link to="/about">About</router-link>
                     </li>
 
+                    <li>
+                        <router-link to="/share">Plugins</router-link>
+                    </li>
+
                     <div v-if="auth.isLoggedIn">
                         <li class="lg:hidden">
                             <router-link to="/@me">Dashboard</router-link>
@@ -59,10 +63,7 @@
                 </ul>
             </div>
 
-            <router-link
-                class="logo btn btn-ghost p-0 h-full"
-                :to="auth.isLoggedIn ? '/@me' : '/'"
-            >
+            <router-link class="logo btn btn-ghost p-0 h-full" to="/">
                 <img src="/logo/header-1.png" width="150" />
             </router-link>
         </div>

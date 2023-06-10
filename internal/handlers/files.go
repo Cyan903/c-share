@@ -11,20 +11,35 @@ import (
 	"github.com/Cyan903/c-share/pkg/api"
 	"github.com/Cyan903/c-share/pkg/config"
 	"github.com/Cyan903/c-share/pkg/log"
+	"github.com/Cyan903/c-share/pkg/web"
 	"github.com/go-chi/chi/v5"
 )
 
 func GetFile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	pass := r.URL.Query().Get("password")
+	jsOnly := r.URL.Query().Get("json") == "true"
+
 	response := api.SimpleResponse{Writer: w}
 	file, err := database.GetFile(id, pass)
 
 	if errors.Is(database.ErrNotFound, err) {
-		response.NotFound("File not found!")
+		if jsOnly {
+			response.NotFound("File not found!")
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		web.ParseTemplate(w, "404", id)
 		return
 	} else if errors.Is(database.ErrBadPW, err) {
-		response.Unauthorized("Invalid password!")
+		if jsOnly {
+			response.Unauthorized("Invalid password!")
+			return
+		}
+
+		w.WriteHeader(http.StatusUnauthorized)
+		web.ParseTemplate(w, "password", id)
 		return
 	} else if err != nil {
 		response.InternalError()
@@ -32,12 +47,13 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if file.Permissions == 1 {
-		response.NotFound("File not found!")
-		return
-	}
+		if jsOnly {
+			response.NotFound("File not found!")
+			return
+		}
 
-	if file.Permissions == 0 && pass != "" {
-		response.BadRequest("Password not required!")
+		w.WriteHeader(http.StatusNotFound)
+		web.ParseTemplate(w, "404", id)
 		return
 	}
 
@@ -45,8 +61,14 @@ func GetFile(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := os.Stat(p); errors.Is(err, os.ErrNotExist) {
 		log.Warning.Println("File exists in DB, but not on disk!", p)
-		response.NotFound("File not found!")
 
+		if jsOnly {
+			response.NotFound("File not found!")
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		web.ParseTemplate(w, "404", id)
 		return
 	}
 

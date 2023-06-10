@@ -17,6 +17,7 @@ func routes() http.Handler {
 	info := httprate.Limit(10, 10*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
 	auth := httprate.Limit(15, 10*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
 	email := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
+	api := httprate.Limit(3, 5*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
 	reset := httprate.Limit(10, 5*time.Minute, httprate.WithLimitHandler(handlers.RateLimit))
 
 	mux.Use(httprate.Limit(250, 1*time.Minute, httprate.WithLimitHandler(handlers.RateLimit)))
@@ -27,6 +28,9 @@ func routes() http.Handler {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
+
+	// Server stats
+	mux.Get("/", handlers.ServerStats)
 
 	mux.Route("/@me", func(r chi.Router) {
 		r.Use(handlers.TokenCheck)
@@ -44,8 +48,25 @@ func routes() http.Handler {
 		r.With(email).Post("/profile/verify", handlers.SendVerification)
 		r.With(email).Post("/profile/{id}", handlers.VerifyEmail)
 
+		// Private API
+		r.Route("/api", func(rm chi.Router) {
+			rm.Use(handlers.APIEmailCheck)
+
+			rm.Get("/", handlers.GetAPIToken)
+			rm.With(api).Post("/token", handlers.GenerateAPIToken)
+			rm.With(api).Delete("/token", handlers.RemoveAPIToken)
+		})
+
 		r.Post("/upload", handlers.Upload)
 		r.Delete("/upload", handlers.DeleteUpload)
+	})
+
+	// Public API
+	mux.Route("/api", func(r chi.Router) {
+		r.Use(handlers.APITokenCheck)
+
+		r.Post("/upload", handlers.UploadFileToken)
+		r.Delete("/upload", handlers.DeleteFilesToken)
 	})
 
 	mux.With(auth).Post("/auth/register", handlers.Register)
@@ -57,7 +78,6 @@ func routes() http.Handler {
 	mux.Get("/f", handlers.ServerFiles)
 	mux.Get("/f/{id}", handlers.GetFile)
 
-	mux.Get("/", handlers.ServerStats)
 	mux.NotFound(handlers.NotFound)
 	mux.MethodNotAllowed(handlers.MethodNotAllowed)
 

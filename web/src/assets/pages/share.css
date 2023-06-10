@@ -1,0 +1,18 @@
+.center-group .input-group {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.center-group .input-group input {
+    width: 80% !important;
+}
+
+.api-token {
+    width: calc(80% + 42px);
+    margin-bottom: 10px;
+}
+
+.input-groups {
+    max-width: 1000px;
+}

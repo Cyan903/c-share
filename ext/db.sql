@@ -21,3 +21,9 @@ create table files (
 	permissions tinyint default 0 not null,
 	created_at datetime not null
 );
+
+create table api (
+	user int not null unique,
+	token char(50) not null,
+	created_at datetime not null
+);

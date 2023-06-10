@@ -35,6 +35,12 @@ export const useAuthStore = defineStore("auth", () => {
             console.warn("[auth] Could not login!");
             console.error(user);
 
+            if (localStorage.getItem("token")) {
+                localStorage.clear();
+                location.reload();
+            }
+
+            localStorage.clear();
             return false;
         }
 

@@ -2,7 +2,7 @@
 
 APP = "c-share" # App name
 WEB = ${PWD}/web # Ensure this points to web
-UPX = upx2 # https://upx.github.io/ (optional)
+UPX = upx # https://upx.github.io/ (optional)
 PKG = npm # pnpm, yarn, etc...
 
 format:

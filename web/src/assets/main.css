@@ -1,7 +1,9 @@
 @import "./base.css";
+@import "./pages/404.css";
 @import "./pages/auth.css";
 @import "./pages/me.css";
 @import "./pages/profile.css";
+@import "./pages/share.css";
 
 html,
 body {

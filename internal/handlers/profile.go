@@ -124,6 +124,13 @@ func UpdateEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Remove existing API tokens if the user has any
+	// No need to check if API token exists
+	if err := database.DeleteAPIToken(id.Issuer); err != nil {
+		response.InternalError()
+		return
+	}
+
 	// Update address
 	if err := database.ChangeEmail(id.Issuer, prof.Email); err != nil {
 		response.InternalError()

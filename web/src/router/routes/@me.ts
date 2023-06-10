@@ -48,6 +48,14 @@ export default [
             },
 
             {
+                path: "api",
+                name: "prof-api",
+                component: () =>
+                    import("@/views/@me/profile/APIProfileView.vue"),
+                meta: { title: "Profile API" },
+            },
+
+            {
                 path: ":id",
                 name: "prof-verify",
                 component: () =>

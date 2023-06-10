@@ -23,5 +23,6 @@ func (s *AdvancedResponse) JSON() {
 	}
 
 	s.Writer.Header().Set("Content-Type", "application/json")
+	s.Writer.WriteHeader(s.Code)
 	s.Writer.Write(js)
 }

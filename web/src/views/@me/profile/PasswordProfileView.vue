@@ -8,7 +8,9 @@
             <p v-if="!auth.userData.emailVerified" class="mb-4">
                 Your email must be verified in order to change your password.
                 You can send a verification code
-                <router-link to="/@me/profile/email">here</router-link>.
+                <router-link to="/@me/profile/email" class="link"
+                    >here</router-link
+                >.
             </p>
             <p v-else class="m-4">
                 Your email is verified! You may change your password.

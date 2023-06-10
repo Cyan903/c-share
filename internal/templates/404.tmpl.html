@@ -1,0 +1,20 @@
+{{ template "base" . }}
+{{ define "title" }} File not found! {{ end }}
+
+{{ define "css" }}
+<style>
+h2 {
+    font-size: 4rem;
+}
+
+p {
+    opacity: 0.7;
+    font-size: 2rem;
+}
+</style>
+{{ end }}
+
+{{ define "content" }}
+<h2>404</h2>
+<p>File not found!</p>
+{{ end }}
