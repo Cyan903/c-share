@@ -65,6 +65,22 @@
             <div
                 class="collapse collapse-arrow bg-base-300 mb-4"
                 @click="toggleOpen"
+            >
+                <div class="collapse-title text-xl font-medium">
+                    Is ShareX supported?
+                </div>
+                <div class="collapse-content">
+                    ShareX is supported but you will need to use a custom
+                    uploader.
+                    <router-link to="/share" class="link">
+                        You can set one up here.
+                    </router-link>
+                </div>
+            </div>
+
+            <div
+                class="collapse collapse-arrow bg-base-300 mb-4"
+                @click="toggleOpen"
                 v-if="source"
             >
                 <div class="collapse-title text-xl font-medium">

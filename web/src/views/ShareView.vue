@@ -49,9 +49,13 @@
                 </label>
 
                 <button class="btn btn-primary" :disabled="!valid">
-                    <a :href="download" download="c-share.sxcu"
-                        >Download Uploader</a
+                    <a
+                        download="c-share.sxcu"
+                        :href="download"
+                        @click="toast.success('Downloaded uploader!')"
                     >
+                        Download Uploader
+                    </a>
                 </button>
             </div>
 
@@ -69,6 +73,7 @@
 <script lang="ts" setup>
 import { computed, reactive, toRef } from "vue";
 import { useValidPassword, useValidComment } from "@/use/useValidate";
+import { useToast } from "vue-toastification";
 import type { SXCU } from "@/types/share/config";
 
 import ValidPasswordItem from "@/components/valid/ValidPasswordItem.vue";
@@ -77,6 +82,7 @@ import ValidCommentItem from "@/components/valid/ValidCommentItem.vue";
 
 import VueJsonPretty from "vue-json-pretty";
 
+const toast = useToast();
 const query = reactive({
     token: "",
     perm: "public",
