@@ -83,7 +83,9 @@
             </div>
 
             <h4 class="text-base-content font-bold my-4 text-sm opacity-70">
-                <a :href="appSource" class="hover:opacity-60">Powered by {{ appName }}</a>
+                <a :href="appSource" class="hover:opacity-60"
+                    >Powered by {{ appName }}</a
+                >
             </h4>
         </div>
     </div>
