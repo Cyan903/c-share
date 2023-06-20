@@ -1,8 +1,8 @@
-# c-share/web
+# c-share/web <img src="/web/public/assets/footer.png" align="right" width="150" />
 
-![node-lts-version](https://img.shields.io/node/v-lts/vite)
+![last-commit](https://img.shields.io/github/last-commit/cyan903/c-share)
 
-The frontend for `c-share`. Make sure `config.yaml` matches up with `.env`. This frontend is self-contained and can be moved if necessary.
+The frontend for `c-share`. Make sure `config.yaml` matches up with `.env`. This frontend is self-contained and can be moved if necessary. This frontend is not required and the API can be accessed programmatically if needed.
 
 ### Install
 
@@ -26,3 +26,7 @@ $ npm run lint
 $ npm run format
 $ npm run type-check
 ```
+
+## License
+
+[MIT](LICENSE)
