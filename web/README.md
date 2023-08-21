@@ -12,7 +12,7 @@ $ cp .env.example .env
 $ nano .env # or any editor...
 ```
 
-### Production
+### Production/Development
 
 ```sh
 $ npm run build # Production
