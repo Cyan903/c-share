@@ -12,38 +12,38 @@ importers:
         specifier: ^2.52.0
         version: 2.52.0(autoprefixer@10.5.0(postcss@8.5.10))(postcss@8.5.10)
       moment:
-        specifier: ^2.30.1
+        specifier: ^2.29.4
         version: 2.30.1
       pinia:
-        specifier: ^2.3.1
+        specifier: ^2.0.36
         version: 2.3.1(typescript@5.0.4)(vue@3.5.33(typescript@5.0.4))
       sweetalert2:
-        specifier: ^11.26.24
+        specifier: ^11.7.5
         version: 11.26.24
       vue:
-        specifier: ^3.5.33
+        specifier: ^3.3.2
         version: 3.5.33(typescript@5.0.4)
       vue-json-pretty:
-        specifier: ^2.6.0
+        specifier: ^2.2.4
         version: 2.6.0(vue@3.5.33(typescript@5.0.4))
       vue-router:
-        specifier: ^4.6.4
+        specifier: ^4.2.0
         version: 4.6.4(vue@3.5.33(typescript@5.0.4))
       vue-toastification:
-        specifier: 2.0.0-rc.5
+        specifier: ^2.0.0-rc.5
         version: 2.0.0-rc.5(vue@3.5.33(typescript@5.0.4))
     devDependencies:
       '@rushstack/eslint-patch':
-        specifier: ^1.16.1
+        specifier: ^1.2.0
         version: 1.16.1
       '@tsconfig/node18':
         specifier: ^2.0.1
         version: 2.0.1
       '@types/node':
-        specifier: ^18.19.130
+        specifier: ^18.16.8
         version: 18.19.130
       '@vitejs/plugin-vue':
-        specifier: ^4.6.2
+        specifier: ^4.2.3
         version: 4.6.2(vite@4.5.14(@types/node@18.19.130))(vue@3.5.33(typescript@5.0.4))
       '@vue/eslint-config-prettier':
         specifier: ^7.1.0
@@ -55,34 +55,34 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
       autoprefixer:
-        specifier: ^10.5.0
+        specifier: ^10.4.14
         version: 10.5.0(postcss@8.5.10)
       eslint:
-        specifier: ^8.57.1
+        specifier: ^8.39.0
         version: 8.57.1
       eslint-plugin-vue:
-        specifier: ^9.33.0
+        specifier: ^9.11.0
         version: 9.33.0(eslint@8.57.1)
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
       postcss:
-        specifier: ^8.5.10
+        specifier: ^8.4.24
         version: 8.5.10
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
       tailwindcss:
-        specifier: ^3.4.19
+        specifier: ^3.3.2
         version: 3.4.19
       typescript:
         specifier: ~5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.5.14
+        specifier: ^4.3.5
         version: 4.5.14(@types/node@18.19.130)
       vue-tsc:
-        specifier: ^1.8.27
+        specifier: ^1.6.4
         version: 1.8.27(typescript@5.0.4)
 
 packages:
